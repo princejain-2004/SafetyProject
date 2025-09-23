@@ -1,0 +1,89 @@
+import React from 'react';
+import { 
+  Home, 
+  BookOpen, 
+  AlertTriangle, 
+  Zap, 
+  Users, 
+  MessageSquare, 
+  BarChart3,
+  Trophy,
+  Phone
+} from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
+
+interface SidebarProps {
+  activeTab: string;
+  onTabChange: (tab: string) => void;
+  isOpen: boolean;
+}
+
+export default function Sidebar({ activeTab, onTabChange, isOpen }: SidebarProps) {
+  const { user } = useAuth();
+
+  const navigationItems = [
+    { id: 'dashboard', label: 'Dashboard', icon: Home, roles: ['student', 'teacher', 'admin'] },
+    { id: 'education', label: 'Learn & Train', icon: BookOpen, roles: ['student', 'teacher', 'admin'] },
+    { id: 'alerts', label: 'Emergency Alerts', icon: AlertTriangle, roles: ['student', 'teacher', 'admin'] },
+    { id: 'drills', label: 'Virtual Drills', icon: Zap, roles: ['student', 'teacher', 'admin'] },
+    { id: 'contacts', label: 'Emergency Contacts', icon: Phone, roles: ['student', 'teacher', 'admin'] },
+    { id: 'communication', label: 'Communication', icon: MessageSquare, roles: ['teacher', 'admin'] },
+    { id: 'analytics', label: 'Analytics', icon: BarChart3, roles: ['admin'] },
+    { id: 'gamification', label: 'Achievements', icon: Trophy, roles: ['student', 'teacher', 'admin'] },
+  ];
+
+  const visibleItems = navigationItems.filter(item => 
+    item.roles.includes(user?.role || 'student')
+  );
+
+  return (
+    <aside className={`
+      fixed inset-y-0 left-0 z-40 w-64 bg-white shadow-lg border-r border-gray-200 transform transition-transform duration-200 ease-in-out
+      md:relative md:transform-none md:shadow-none
+      ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+    `}>
+      <div className="flex flex-col h-full">
+        <div className="flex-1 py-6 overflow-y-auto">
+          <nav className="px-3 space-y-1">
+            {visibleItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => onTabChange(item.id)}
+                  className={`
+                    w-full flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors
+                    ${activeTab === item.id
+                      ? 'bg-red-50 text-red-700 border-r-2 border-red-600'
+                      : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                    }
+                  `}
+                >
+                  <Icon size={20} className="mr-3" />
+                  {item.label}
+                </button>
+              );
+            })}
+          </nav>
+        </div>
+
+        {/* User Stats */}
+        <div className="p-4 border-t border-gray-200">
+          <div className="bg-gradient-to-r from-blue-50 to-green-50 rounded-lg p-3">
+            <h4 className="text-sm font-medium text-gray-900 mb-2">Your Progress</h4>
+            <div className="space-y-1">
+              <div className="flex justify-between text-xs">
+                <span className="text-gray-600">Points</span>
+                <span className="font-medium text-blue-600">{user?.points || 0}</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-gray-600">Badges</span>
+                <span className="font-medium text-green-600">{user?.badges?.length || 0}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+  );
+}
