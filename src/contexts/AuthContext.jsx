@@ -1,18 +1,9 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { User } from '../types';
 
-interface AuthContextType {
-  user: User | null;
-  loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
-  switchRole: (role: 'student' | 'teacher' | 'admin') => void;
-}
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext(undefined);
 
 // Mock users for demonstration
-const mockUsers: User[] = [
+const mockUsers = [
   {
     id: '1',
     email: 'student@school.edu',
@@ -46,8 +37,8 @@ const mockUsers: User[] = [
   }
 ];
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -59,8 +50,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setLoading(false);
   }, []);
 
-  const login = async (email: string, password: string) => {
-    // Mock login - in real app, this would authenticate with Supabase
+  const login = async (email, password) => {
+    // Mock login - in a real app, this would authenticate with a backend
     const foundUser = mockUsers.find(u => u.email === email);
     if (foundUser) {
       setUser(foundUser);
@@ -75,7 +66,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem('currentUser');
   };
 
-  const switchRole = (role: 'student' | 'teacher' | 'admin') => {
+  const switchRole = (role) => {
     if (user) {
       const updatedUser = { ...user, role };
       setUser(updatedUser);

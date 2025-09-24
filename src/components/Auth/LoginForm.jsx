@@ -9,7 +9,7 @@ export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
@@ -29,7 +29,7 @@ export default function LoginForm() {
     { email: 'admin@school.edu', role: 'Administrator', password: 'demo123' }
   ];
 
-  const quickLogin = (email: string) => {
+  const quickLogin = (email) => {
     setEmail(email);
     setPassword('demo123');
   };

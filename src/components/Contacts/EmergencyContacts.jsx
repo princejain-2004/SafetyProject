@@ -10,24 +10,11 @@ import {
   Filter
 } from 'lucide-react';
 
-interface Contact {
-  id: string;
-  name: string;
-  role: string;
-  department: string;
-  phone: string;
-  email: string;
-  location?: string;
-  available24_7: boolean;
-  priority: number;
-  extension?: string;
-}
-
 export default function EmergencyContacts() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDepartment, setSelectedDepartment] = useState('all');
 
-  const contacts: Contact[] = [
+  const contacts = [
     {
       id: '1',
       name: 'Dr. Sarah Martinez',
@@ -110,13 +97,13 @@ export default function EmergencyContacts() {
 
   const filteredContacts = contacts.filter(contact => {
     const matchesSearch = contact.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         contact.role.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         contact.department.toLowerCase().includes(searchTerm.toLowerCase());
+                          contact.role.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          contact.department.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesDepartment = selectedDepartment === 'all' || contact.department === selectedDepartment;
     return matchesSearch && matchesDepartment;
   }).sort((a, b) => a.priority - b.priority);
 
-  const getPriorityColor = (priority: number) => {
+  const getPriorityColor = (priority) => {
     switch (priority) {
       case 1: return 'bg-red-100 text-red-700';
       case 2: return 'bg-yellow-100 text-yellow-700';
@@ -125,7 +112,7 @@ export default function EmergencyContacts() {
     }
   };
 
-  const getPriorityLabel = (priority: number) => {
+  const getPriorityLabel = (priority) => {
     switch (priority) {
       case 1: return 'Critical';
       case 2: return 'High';

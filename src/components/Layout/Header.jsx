@@ -2,12 +2,7 @@ import React, { useState } from 'react';
 import { Shield, Bell, User, Menu, X, LogOut } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
-interface HeaderProps {
-  onMenuToggle: () => void;
-  isMobileMenuOpen: boolean;
-}
-
-export default function Header({ onMenuToggle, isMobileMenuOpen }: HeaderProps) {
+export default function Header({ onMenuToggle, isMobileMenuOpen }) {
   const { user, logout, switchRole } = useAuth();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showRoleSwitch, setShowRoleSwitch] = useState(false);
@@ -108,7 +103,7 @@ export default function Header({ onMenuToggle, isMobileMenuOpen }: HeaderProps) 
                 <button
                   key={role}
                   onClick={() => {
-                    switchRole(role as any);
+                    switchRole(role);
                     setShowRoleSwitch(false);
                   }}
                   className={`w-full text-left px-4 py-2 rounded-md capitalize transition-colors ${

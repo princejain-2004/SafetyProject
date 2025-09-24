@@ -13,25 +13,11 @@ import {
   Shield
 } from 'lucide-react';
 
-interface DrillData {
-  id: string;
-  title: string;
-  type: 'fire' | 'earthquake' | 'severe-weather' | 'lockdown';
-  description: string;
-  duration: number;
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
-  points: number;
-  participants: number;
-  averageScore: number;
-  completed: boolean;
-  lastScore?: number;
-}
-
 export default function VirtualDrills() {
-  const [selectedDrill, setSelectedDrill] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'available' | 'results'>('available');
+  const [selectedDrill, setSelectedDrill] = useState(null);
+  const [activeTab, setActiveTab] = useState('available');
 
-  const drills: DrillData[] = [
+  const drills = [
     {
       id: '1',
       title: 'School Fire Evacuation',
@@ -84,7 +70,7 @@ export default function VirtualDrills() {
     }
   ];
 
-  const getTypeIcon = (type: string) => {
+  const getTypeIcon = (type) => {
     switch (type) {
       case 'fire': return Flame;
       case 'earthquake': return AlertTriangle;
@@ -94,7 +80,7 @@ export default function VirtualDrills() {
     }
   };
 
-  const getTypeColor = (type: string) => {
+  const getTypeColor = (type) => {
     switch (type) {
       case 'fire': return 'text-red-600 bg-red-100';
       case 'earthquake': return 'text-yellow-600 bg-yellow-100';
@@ -104,7 +90,7 @@ export default function VirtualDrills() {
     }
   };
 
-  const getDifficultyColor = (difficulty: string) => {
+  const getDifficultyColor = (difficulty) => {
     switch (difficulty) {
       case 'beginner': return 'text-green-700 bg-green-100';
       case 'intermediate': return 'text-yellow-700 bg-yellow-100';

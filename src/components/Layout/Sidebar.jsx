@@ -12,13 +12,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
-interface SidebarProps {
-  activeTab: string;
-  onTabChange: (tab: string) => void;
-  isOpen: boolean;
-}
-
-export default function Sidebar({ activeTab, onTabChange, isOpen }: SidebarProps) {
+export default function Sidebar({ activeTab, onTabChange, isOpen }) {
   const { user } = useAuth();
 
   const navigationItems = [

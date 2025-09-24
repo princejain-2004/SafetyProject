@@ -10,24 +10,11 @@ import {
   Search
 } from 'lucide-react';
 
-interface Module {
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
-  duration: number;
-  points: number;
-  completed: boolean;
-  rating: number;
-  thumbnail: string;
-}
-
 export default function EducationModules() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
 
-  const modules: Module[] = [
+  const modules = [
     {
       id: '1',
       title: 'Fire Safety Fundamentals',
@@ -107,11 +94,11 @@ export default function EducationModules() {
   const filteredModules = modules.filter(module => {
     const matchesCategory = selectedCategory === 'all' || module.category === selectedCategory;
     const matchesSearch = module.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         module.description.toLowerCase().includes(searchTerm.toLowerCase());
+                          module.description.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 
-  const getDifficultyColor = (difficulty: string) => {
+  const getDifficultyColor = (difficulty) => {
     switch (difficulty) {
       case 'beginner': return 'text-green-600 bg-green-100';
       case 'intermediate': return 'text-yellow-600 bg-yellow-100';

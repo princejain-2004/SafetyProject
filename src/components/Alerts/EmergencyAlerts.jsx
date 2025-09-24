@@ -10,20 +10,8 @@ import {
   CheckCircle
 } from 'lucide-react';
 
-interface Alert {
-  id: string;
-  title: string;
-  message: string;
-  type: 'emergency' | 'warning' | 'info' | 'test';
-  severity: 'low' | 'medium' | 'high' | 'critical';
-  region: string;
-  timestamp: string;
-  active: boolean;
-  acknowledged: boolean;
-}
-
 export default function EmergencyAlerts() {
-  const [alerts, setAlerts] = useState<Alert[]>([
+  const [alerts, setAlerts] = useState([
     {
       id: '1',
       title: 'Severe Weather Warning',
@@ -70,7 +58,7 @@ export default function EmergencyAlerts() {
     }
   ]);
 
-  const getAlertIcon = (type: string) => {
+  const getAlertIcon = (type) => {
     switch (type) {
       case 'emergency': return AlertTriangle;
       case 'warning': return Shield;
@@ -79,7 +67,7 @@ export default function EmergencyAlerts() {
     }
   };
 
-  const getAlertColor = (type: string, severity: string) => {
+  const getAlertColor = (type, severity) => {
     if (type === 'emergency' || severity === 'critical') {
       return 'border-red-500 bg-red-50';
     }
@@ -92,7 +80,7 @@ export default function EmergencyAlerts() {
     return 'border-gray-300 bg-gray-50';
   };
 
-  const getIconColor = (type: string, severity: string) => {
+  const getIconColor = (type, severity) => {
     if (type === 'emergency' || severity === 'critical') {
       return 'text-red-600';
     }
@@ -105,7 +93,7 @@ export default function EmergencyAlerts() {
     return 'text-gray-600';
   };
 
-  const acknowledgeAlert = (alertId: string) => {
+  const acknowledgeAlert = (alertId) => {
     setAlerts(alerts.map(alert => 
       alert.id === alertId ? { ...alert, acknowledged: true } : alert
     ));
