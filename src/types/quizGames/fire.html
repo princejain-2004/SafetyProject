@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fire Preparedness Quiz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a202c;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #e2e8f0;
+            user-select: none;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .quiz-container {
+            width: 90%;
+            max-width: 600px;
+            background-color: #2d3748;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            border: 4px solid #f56565;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .question-card {
+            background-color: #4a5568;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .option-button {
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .option-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        .option-button:active {
+            transform: translateY(0);
+        }
+        .correct-answer {
+            background-color: #48bb78 !important;
+            color: #fff;
+            border-color: #48bb78 !important;
+        }
+        .incorrect-answer {
+            background-color: #f56565 !important;
+            color: #fff;
+            border-color: #f56565 !important;
+        }
+
+        .feedback-message {
+            animation: bounceIn 0.8s ease-in-out;
+        }
+        @keyframes bounceIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="bg-gray-900 flex items-center justify-center min-h-screen">
+
+    <div class="quiz-container">
+        <h1 class="text-3xl font-bold text-red-400">Fire Preparedness Quiz</h1>
+
+        <!-- Quiz Area -->
+        <div id="quiz-area" class="flex flex-col gap-4">
+            <!-- Question Card -->
+            <div id="question-card" class="question-card hidden">
+                <h2 id="question-text" class="text-xl font-bold mb-4"></h2>
+                <div id="options-container" class="flex flex-col space-y-4">
+                    <!-- Options will be injected here by JS -->
+                </div>
+            </div>
+
+            <!-- Start Screen -->
+            <div id="start-screen" class="text-center">
+                <img src="https://placehold.co/400x200/ef4444/ffffff?text=FIRE+QUIZ" alt="Fire Quiz Image" class="mx-auto rounded-lg mb-4">
+                <p class="text-lg font-medium">Test your knowledge and learn how to stay safe during a fire!</p>
+                <button id="start-button" class="mt-8 option-button bg-red-500 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:bg-red-600">Start Quiz</button>
+            </div>
+
+            <!-- Feedback Message -->
+            <div id="feedback-message" class="feedback-message text-center text-xl font-bold mt-4 hidden"></div>
+
+            <!-- Navigation Button -->
+            <button id="next-button" class="mt-4 option-button bg-green-500 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:bg-green-600 hidden"></button>
+        </div>
+
+        <!-- End Screen -->
+        <div id="end-screen" class="text-center hidden">
+            <h2 class="text-3xl font-bold text-green-400">Quiz Complete!</h2>
+            <p id="final-score" class="text-lg font-medium mt-4"></p>
+            <button id="restart-button" class="mt-8 option-button bg-red-500 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:bg-red-600">Restart Quiz</button>
+        </div>
+    </div>
+
+    <script>
+        // Define your quiz sets
+        const quizSets = [
+            [ // Quiz Set 1: Fire Prevention
+                {
+                    question: "To prevent a fire, where should you NOT leave a lit candle?",
+                    options: [
+                        { text: "On a sturdy, flat surface away from drafts.", isCorrect: false, feedback: "Incorrect. This is a good practice. Candles should be on a stable surface. Try again." },
+                        { text: "Near curtains or other flammable materials.", isCorrect: true, feedback: "Correct! Keep candles and open flames away from anything that can easily catch fire." },
+                        { text: "Inside a glass jar or holder.", isCorrect: false, feedback: "Incorrect. Using a proper holder is a good safety measure. Try again." }
+                    ]
+                },
+                {
+                    question: "What is the most important thing to do to an electrical appliance that is not in use?",
+                    options: [
+                        { text: "Cover it with a cloth to keep it clean.", isCorrect: false, feedback: "Incorrect. This is not a fire safety practice. Try again." },
+                        { text: "Leave it plugged in at all times.", isCorrect: false, feedback: "Incorrect. This can lead to electrical fires. Try again." },
+                        { text: "Unplug it from the wall socket.", isCorrect: true, feedback: "Correct! Unplugging appliances when not in use helps prevent a potential fire from a short circuit." }
+                    ]
+                }
+            ],
+            [ // Quiz Set 2: During a Fire
+                {
+                    question: "If your clothes catch fire, what is the correct action to take?",
+                    options: [
+                        { text: "Run to find water to put it out.", isCorrect: false, feedback: "Incorrect. Running will fan the flames and make the fire worse. Try again." },
+                        { text: "Yell for help as loudly as possible.", isCorrect: false, feedback: "Incorrect. While you should call for help, your first priority is to put out the fire. Try again." },
+                        { text: "Stop, Drop, and Roll.", isCorrect: true, feedback: "Correct! This action helps to suffocate the fire and is the best way to put out flames on your clothes." }
+                    ]
+                },
+                {
+                    question: "When exiting a smoky room, how should you move?",
+                    options: [
+                        { text: "Standing up straight to see over the smoke.", isCorrect: false, feedback: "Incorrect. Smoke rises. You should stay low to the ground to breathe cleaner air. Try again." },
+                        { text: "Crawling on your hands and knees.", isCorrect: true, feedback: "Correct! By crawling, you stay below the thick, toxic smoke and are more likely to find your way to safety." },
+                        { text: "Walking backward to avoid inhaling smoke.", isCorrect: false, feedback: "Incorrect. This can lead to you getting lost or running into an obstacle. Try again." }
+                    ]
+                }
+            ],
+            [ // Quiz Set 3: Fire Extinguisher Use
+                {
+                    question: "What does the 'A' in the acronym PASS for using a fire extinguisher stand for?",
+                    options: [
+                        { text: "Aim at the base of the fire.", isCorrect: true, feedback: "Correct! You must aim the nozzle at the base of the fire to put it out effectively." },
+                        { text: "Act quickly and calmly.", isCorrect: false, feedback: "Incorrect. While acting quickly is important, 'A' stands for aiming at the base of the fire. Try again." },
+                        { text: "Always have a clear escape route.", isCorrect: false, feedback: "Incorrect. This is an important safety rule, but not what the 'A' in PASS stands for. Try again." }
+                    ]
+                },
+                {
+                    question: "What should you do if the fire is too large to fight with an extinguisher?",
+                    options: [
+                        { text: "Continue to fight the fire until help arrives.", isCorrect: false, feedback: "Incorrect. Fighting a large fire is extremely dangerous. You should never risk your safety. Try again." },
+                        { text: "Close the door to the room and evacuate immediately.", isCorrect: true, feedback: "Correct! Closing the door can help contain the fire and slow its spread, giving you more time to get out safely." },
+                        { text: "Go back into the room to grab valuables.", isCorrect: false, feedback: "Incorrect. Your life is more valuable than any possession. Never re-enter a burning building. Try again." }
+                    ]
+                }
+            ],
+            [ // Quiz Set 4: The Fire Plan
+                {
+                    question: "How often should you test your smoke alarms?",
+                    options: [
+                        { text: "Once a year.", isCorrect: false, feedback: "Incorrect. While once a year is a good start, you should test them more frequently. Try again." },
+                        { text: "Once a month.", isCorrect: true, feedback: "Correct! You should test your smoke alarms at least once a month to ensure they are working properly." },
+                        { text: "Only when the battery beeps.", isCorrect: false, feedback: "Incorrect. You should never wait for the battery to die. This can be too late in an emergency. Try again." }
+                    ]
+                },
+                {
+                    question: "What is the purpose of having a designated 'meeting place' in your family fire plan?",
+                    options: [
+                        { text: "To meet up with friends after you escape.", isCorrect: false, feedback: "Incorrect. The meeting place is for your family. Try again." },
+                        { text: "To find out if everyone has made it out safely.", isCorrect: true, feedback: "Correct! A designated meeting place ensures everyone knows where to go and helps you quickly account for all family members." },
+                        { text: "To store extra clothes and supplies.", isCorrect: false, feedback: "Incorrect. The main purpose is to account for family members. Supplies can be stored elsewhere. Try again." }
+                    ]
+                }
+            ]
+        ];
+
+        let currentSetIndex = 0;
+        let currentQuestionIndex = 0;
+        let score = 0;
+        
+        // UI Elements
+        const startScreen = document.getElementById('start-screen');
+        const startButton = document.getElementById('start-button');
+        const quizArea = document.getElementById('quiz-area');
+        const questionCard = document.getElementById('question-card');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const feedbackMessage = document.getElementById('feedback-message');
+        const nextButton = document.getElementById('next-button');
+        const endScreen = document.getElementById('end-screen');
+        const finalScoreText = document.getElementById('final-score');
+        const restartButton = document.getElementById('restart-button');
+
+        // Functions
+        function startQuiz() {
+            startScreen.classList.add('hidden');
+            quizArea.classList.remove('hidden');
+            questionCard.classList.remove('hidden');
+            currentSetIndex = 0;
+            currentQuestionIndex = 0;
+            score = 0;
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const currentSet = quizSets[currentSetIndex];
+            const currentQuestion = currentSet[currentQuestionIndex];
+
+            questionText.textContent = currentQuestion.question;
+            optionsContainer.innerHTML = '';
+            feedbackMessage.classList.add('hidden');
+            nextButton.classList.add('hidden');
+
+            currentQuestion.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.textContent = option.text;
+                button.classList.add('option-button', 'bg-red-500', 'text-white', 'font-semibold', 'py-3', 'px-6', 'rounded-xl', 'shadow-lg', 'hover:bg-red-600', 'transition', 'duration-200', 'ease-in-out');
+                button.onclick = () => handleAnswer(option.isCorrect, option.feedback, button);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function handleAnswer(isCorrect, feedback, clickedButton) {
+            optionsContainer.querySelectorAll('button').forEach(button => {
+                button.disabled = true;
+                if (button === clickedButton) {
+                    if (isCorrect) {
+                        button.classList.add('correct-answer');
+                    } else {
+                        button.classList.add('incorrect-answer');
+                    }
+                }
+            });
+
+            feedbackMessage.textContent = feedback;
+            feedbackMessage.classList.remove('hidden');
+
+            if (isCorrect) {
+                score += 10;
+                currentQuestionIndex++;
+                if (currentQuestionIndex < quizSets[currentSetIndex].length) {
+                    nextButton.textContent = 'Next Question';
+                    nextButton.onclick = loadQuestion;
+                    nextButton.classList.remove('hidden');
+                } else {
+                    currentSetIndex++;
+                    currentQuestionIndex = 0;
+                    if (currentSetIndex < quizSets.length) {
+                        nextButton.textContent = 'Continue to Next Set';
+                        nextButton.onclick = loadQuestion;
+                        nextButton.classList.remove('hidden');
+                    } else {
+                        showEndScreen();
+                    }
+                }
+            } else {
+                nextButton.textContent = 'Try Again';
+                nextButton.onclick = () => {
+                    optionsContainer.querySelectorAll('button').forEach(button => {
+                        button.disabled = false;
+                        button.classList.remove('correct-answer', 'incorrect-answer');
+                    });
+                    loadQuestion();
+                };
+                nextButton.classList.remove('hidden');
+            }
+        }
+
+        function showEndScreen() {
+            quizArea.classList.add('hidden');
+            endScreen.classList.remove('hidden');
+            finalScoreText.textContent = `You completed the quiz with a total score of ${score} points!`;
+        }
+        
+        // Event Listeners
+        startButton.addEventListener('click', startQuiz);
+        restartButton.addEventListener('click', startQuiz);
+
+        // Initial setup
+        document.addEventListener('DOMContentLoaded', () => {
+            // This is just to ensure the initial state is correct, no need to call other functions here.
+            // The start button handles the initial load.
+        });
+        
+    </script>
+</body>
+</html>

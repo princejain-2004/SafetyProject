@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Earthquake Preparedness Quiz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a202c;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #e2e8f0;
+            user-select: none;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .quiz-container {
+            width: 90%;
+            max-width: 600px;
+            background-color: #2d3748;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            border: 4px solid #718096;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .question-card {
+            background-color: #4a5568;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .option-button {
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .option-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        .option-button:active {
+            transform: translateY(0);
+        }
+        .correct-answer {
+            background-color: #48bb78 !important;
+            color: #fff;
+            border-color: #48bb78 !important;
+        }
+        .incorrect-answer {
+            background-color: #f56565 !important;
+            color: #fff;
+            border-color: #f56565 !important;
+        }
+
+        .feedback-message {
+            animation: bounceIn 0.8s ease-in-out;
+        }
+        @keyframes bounceIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="bg-gray-900 flex items-center justify-center min-h-screen">
+
+    <div class="quiz-container">
+        <h1 class="text-3xl font-bold text-gray-400">Earthquake Preparedness Quiz</h1>
+
+        <!-- Quiz Area -->
+        <div id="quiz-area" class="flex flex-col gap-4">
+            <!-- Question Card -->
+            <div id="question-card" class="question-card hidden">
+                <h2 id="question-text" class="text-xl font-bold mb-4"></h2>
+                <div id="options-container" class="flex flex-col space-y-4">
+                    <!-- Options will be injected here by JS -->
+                </div>
+            </div>
+
+            <!-- Start Screen -->
+            <div id="start-screen" class="text-center">
+                <img src="https://placehold.co/400x200/4a5568/ffffff?text=EARTHQUAKE+QUIZ" alt="Earthquake Quiz Image" class="mx-auto rounded-lg mb-4">
+                <p class="text-lg font-medium">Test your knowledge and learn how to stay safe during an earthquake!</p>
+                <button id="start-button" class="mt-8 option-button bg-gray-500 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:bg-gray-600">Start Quiz</button>
+            </div>
+
+            <!-- Feedback Message -->
+            <div id="feedback-message" class="feedback-message text-center text-xl font-bold mt-4 hidden"></div>
+
+            <!-- Navigation Button -->
+            <button id="next-button" class="mt-4 option-button bg-green-500 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:bg-green-600 hidden"></button>
+        </div>
+
+        <!-- End Screen -->
+        <div id="end-screen" class="text-center hidden">
+            <h2 class="text-3xl font-bold text-green-400">Quiz Complete!</h2>
+            <p id="final-score" class="text-lg font-medium mt-4"></p>
+            <button id="restart-button" class="mt-8 option-button bg-gray-500 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:bg-gray-600">Restart Quiz</button>
+        </div>
+    </div>
+
+    <script>
+        // Define your quiz sets
+        const quizSets = [
+            [ // Quiz Set 1: Before the Earthquake
+                {
+                    question: "What is the most important item to secure in your home to prevent injury during an earthquake?",
+                    options: [
+                        { text: "Small, lightweight objects.", isCorrect: false, feedback: "Incorrect. While you should secure everything, large, heavy items pose the greatest risk. Try again." },
+                        { text: "Heavy furniture like bookcases and cabinets.", isCorrect: true, feedback: "Correct! Securing heavy furniture prevents it from toppling over and causing serious injury." },
+                        { text: "Picture frames on the wall.", isCorrect: false, feedback: "Incorrect. Picture frames are a low-priority risk. Focus on heavy furniture. Try again." }
+                    ]
+                },
+                {
+                    question: "What should you prepare in advance for an earthquake emergency?",
+                    options: [
+                        { text: "An emergency kit with non-perishable food, water, and a flashlight.", isCorrect: true, feedback: "Correct! An emergency kit is crucial for survival until help arrives." },
+                        { text: "A detailed map of all the shopping malls in your city.", isCorrect: false, feedback: "Incorrect. A map of safety zones and evacuation routes is more important. Try again." },
+                        { text: "New clothes and shoes for your family.", isCorrect: false, feedback: "Incorrect. While you need clothes, your main focus should be on survival supplies. Try again." }
+                    ]
+                }
+            ],
+            [ // Quiz Set 2: During the Earthquake
+                {
+                    question: "If you are indoors during an earthquake, what is the safest action?",
+                    options: [
+                        { text: "Run outside immediately.", isCorrect: false, feedback: "Incorrect. Running outside can expose you to falling debris and other dangers. It's safer to stay inside. Try again." },
+                        { text: "Hide in a doorway.", isCorrect: false, feedback: "Incorrect. Doorways are not as safe as they were once thought to be. It's better to get under a sturdy object. Try again." },
+                        { text: "Drop, Cover, and Hold On under a sturdy piece of furniture.", isCorrect: true, feedback: "Correct! This is the safest way to protect yourself from falling objects. Good job!" }
+                    ]
+                },
+                {
+                    question: "If you are outdoors during an earthquake, what should you do?",
+                    options: [
+                        { text: "Stand next to a tall building for protection.", isCorrect: false, feedback: "Incorrect. Buildings can collapse or drop debris on you. Try again." },
+                        { text: "Move to an open area away from buildings, power lines, and trees.", isCorrect: true, feedback: "Correct! The safest place to be is in an open area with nothing that can fall on you." },
+                        { text: "Run into a nearby store or restaurant.", isCorrect: false, feedback: "Incorrect. The safest option is to stay outside and away from structures. Try again." }
+                    ]
+                }
+            ],
+            [ // Quiz Set 3: After the Shaking Stops
+                {
+                    question: "After the shaking stops, what is the first thing you should check for in your home?",
+                    options: [
+                        { text: "If your television and other electronics still work.", isCorrect: false, feedback: "Incorrect. Electrical devices can be a fire hazard after an earthquake. Try again." },
+                        { text: "Any structural damage and gas leaks.", isCorrect: true, feedback: "Correct! Checking for gas leaks and structural damage is the most important step to ensure your immediate safety." },
+                        { text: "To see if your furniture is still in the same place.", isCorrect: false, feedback: "Incorrect. This is not a priority. Focus on safety first. Try again." }
+                    ]
+                },
+                {
+                    question: "How should you communicate with family after an earthquake if phone lines are down?",
+                    options: [
+                        { text: "Send text messages instead of making phone calls.", isCorrect: true, feedback: "Correct! Text messages often go through when phone calls won't, as they require less bandwidth." },
+                        { text: "Immediately try to find a public payphone.", isCorrect: false, feedback: "Incorrect. Payphones may not be working and can be dangerous. Try again." },
+                        { text: "Use your phone's camera to record a video message.", isCorrect: false, feedback: "Incorrect. This is not a reliable way to communicate. Try again." }
+                    ]
+                }
+            ],
+            [ // Quiz Set 4: The Essentials
+                {
+                    question: "What is a common danger after an earthquake that is a result of broken objects and a lack of light?",
+                    options: [
+                        { text: "Fires.", isCorrect: true, feedback: "Correct! Broken gas lines and electrical wires can easily spark a fire, which is a major post-earthquake risk." },
+                        { text: "Flooding.", isCorrect: false, feedback: "Incorrect. While floods can happen, they are not the most common danger after an earthquake. Try again." },
+                        { text: "Tornadoes.", isCorrect: false, feedback: "Incorrect. Tornadoes are a weather phenomenon, not a result of earthquakes. Try again." }
+                    ]
+                },
+                {
+                    question: "What should you do with a pet during an earthquake?",
+                    options: [
+                        { text: "Leave them to find their own way to safety.", isCorrect: false, feedback: "Incorrect. Pets are part of the family and need to be secured. Try again." },
+                        { text: "Provide a safe, sheltered space for them and have a plan to secure them.", isCorrect: true, feedback: "Correct! Your family's plan should include pets. Having a crate or carrier ready is a great idea." },
+                        { text: "Put a leash on them and wait outside.", isCorrect: false, feedback: "Incorrect. Being outside near a building is dangerous during an earthquake. Try again." }
+                    ]
+                }
+            ]
+        ];
+
+        let currentSetIndex = 0;
+        let currentQuestionIndex = 0;
+        let score = 0;
+        
+        // UI Elements
+        const startScreen = document.getElementById('start-screen');
+        const startButton = document.getElementById('start-button');
+        const quizArea = document.getElementById('quiz-area');
+        const questionCard = document.getElementById('question-card');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const feedbackMessage = document.getElementById('feedback-message');
+        const nextButton = document.getElementById('next-button');
+        const endScreen = document.getElementById('end-screen');
+        const finalScoreText = document.getElementById('final-score');
+        const restartButton = document.getElementById('restart-button');
+
+        // Functions
+        function startQuiz() {
+            startScreen.classList.add('hidden');
+            quizArea.classList.remove('hidden');
+            questionCard.classList.remove('hidden');
+            currentSetIndex = 0;
+            currentQuestionIndex = 0;
+            score = 0;
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const currentSet = quizSets[currentSetIndex];
+            const currentQuestion = currentSet[currentQuestionIndex];
+
+            questionText.textContent = currentQuestion.question;
+            optionsContainer.innerHTML = '';
+            feedbackMessage.classList.add('hidden');
+            nextButton.classList.add('hidden');
+
+            currentQuestion.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.textContent = option.text;
+                button.classList.add('option-button', 'bg-gray-500', 'text-white', 'font-semibold', 'py-3', 'px-6', 'rounded-xl', 'shadow-lg', 'hover:bg-gray-600', 'transition', 'duration-200', 'ease-in-out');
+                button.onclick = () => handleAnswer(option.isCorrect, option.feedback, button);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function handleAnswer(isCorrect, feedback, clickedButton) {
+            optionsContainer.querySelectorAll('button').forEach(button => {
+                button.disabled = true;
+                if (button === clickedButton) {
+                    if (isCorrect) {
+                        button.classList.add('correct-answer');
+                    } else {
+                        button.classList.add('incorrect-answer');
+                    }
+                }
+            });
+
+            feedbackMessage.textContent = feedback;
+            feedbackMessage.classList.remove('hidden');
+
+            if (isCorrect) {
+                score += 10;
+                currentQuestionIndex++;
+                if (currentQuestionIndex < quizSets[currentSetIndex].length) {
+                    nextButton.textContent = 'Next Question';
+                    nextButton.onclick = loadQuestion;
+                    nextButton.classList.remove('hidden');
+                } else {
+                    currentSetIndex++;
+                    currentQuestionIndex = 0;
+                    if (currentSetIndex < quizSets.length) {
+                        nextButton.textContent = 'Continue to Next Set';
+                        nextButton.onclick = loadQuestion;
+                        nextButton.classList.remove('hidden');
+                    } else {
+                        showEndScreen();
+                    }
+                }
+            } else {
+                nextButton.textContent = 'Try Again';
+                nextButton.onclick = () => {
+                    optionsContainer.querySelectorAll('button').forEach(button => {
+                        button.disabled = false;
+                        button.classList.remove('correct-answer', 'incorrect-answer');
+                    });
+                    loadQuestion();
+                };
+                nextButton.classList.remove('hidden');
+            }
+        }
+
+        function showEndScreen() {
+            quizArea.classList.add('hidden');
+            endScreen.classList.remove('hidden');
+            finalScoreText.textContent = `You completed the quiz with a total score of ${score} points!`;
+        }
+        
+        // Event Listeners
+        startButton.addEventListener('click', startQuiz);
+        restartButton.addEventListener('click', startQuiz);
+
+        // Initial setup
+        document.addEventListener('DOMContentLoaded', () => {
+            // This is just to ensure the initial state is correct, no need to call other functions here.
+            // The start button handles the initial load.
+        });
+        
+    </script>
+</body>
+</html>
