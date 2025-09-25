@@ -9,11 +9,14 @@ import EducationModules from './components/Education/EducationModules';
 import EmergencyAlerts from './components/Alerts/EmergencyAlerts';
 import VirtualDrills from './components/Drills/VirtualDrills';
 import EmergencyContacts from './components/Contacts/EmergencyContacts';
+import Quiz from './components/Quiz/Quiz';
+import { DisasterLandingPage } from './components/LandingPage/LandingPage'; // <--- import Landing Page
 
 function AppContent() {
   const { user, loading } = useAuth();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showLanding, setShowLanding] = useState(true); // <-- NEW STATE
 
   useEffect(() => {
     // Close mobile menu when tab changes
@@ -31,10 +34,17 @@ function AppContent() {
     );
   }
 
+  // Step 1: Show landing page first
+  if (showLanding) {
+    return <DisasterLandingPage onGetStartedClick={() => setShowLanding(false)} />;
+  }
+
+  // Step 2: If no user logged in → show login/signup
   if (!user) {
     return <LoginForm />;
   }
 
+  // Step 3: If logged in → show main app
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard':
@@ -47,27 +57,8 @@ function AppContent() {
         return <VirtualDrills />;
       case 'contacts':
         return <EmergencyContacts />;
-      case 'communication':
-        return (
-          <div className="text-center py-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Communication Center</h2>
-            <p className="text-gray-600">Real-time communication tools will be available here.</p>
-          </div>
-        );
-      case 'analytics':
-        return (
-          <div className="text-center py-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Analytics Dashboard</h2>
-            <p className="text-gray-600">Detailed analytics and reporting tools coming soon.</p>
-          </div>
-        );
-      case 'gamification':
-        return (
-          <div className="text-center py-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Achievements & Badges</h2>
-            <p className="text-gray-600">View your achievements, badges, and leaderboard rankings.</p>
-          </div>
-        );
+      case 'Quiz':
+        return <Quiz />;
       default:
         return <StudentDashboard />;
     }

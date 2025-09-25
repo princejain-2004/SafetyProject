@@ -1,4 +1,7 @@
 import React from 'react';
+import { IoMdNotifications } from "react-icons/io"
+import { IoGameController } from "react-icons/io5";
+
 import { 
   Home, 
   BookOpen, 
@@ -16,14 +19,12 @@ export default function Sidebar({ activeTab, onTabChange, isOpen }) {
   const { user } = useAuth();
 
   const navigationItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: Home, roles: ['student', 'teacher', 'admin'] },
-    { id: 'education', label: 'Learn & Train', icon: BookOpen, roles: ['student', 'teacher', 'admin'] },
-    { id: 'alerts', label: 'Emergency Alerts', icon: AlertTriangle, roles: ['student', 'teacher', 'admin'] },
-    { id: 'drills', label: 'Virtual Drills', icon: Zap, roles: ['student', 'teacher', 'admin'] },
-    { id: 'contacts', label: 'Emergency Contacts', icon: Phone, roles: ['student', 'teacher', 'admin'] },
-    { id: 'communication', label: 'Communication', icon: MessageSquare, roles: ['teacher', 'admin'] },
-    { id: 'analytics', label: 'Analytics', icon: BarChart3, roles: ['admin'] },
-    { id: 'gamification', label: 'Achievements', icon: Trophy, roles: ['student', 'teacher', 'admin'] },
+    { id: 'dashboard', label: 'Dashboard', icon: Home, roles: ['student', 'admin'] },
+    { id: 'education', label: 'Learn & Train', icon: BookOpen, roles: ['student', 'admin'] },
+    { id: 'alerts', label: 'Notifications', icon: IoMdNotifications, roles: ['student', 'admin'] },
+    { id: 'drills', label: 'Virtual Drills', icon: Zap, roles: ['student'] },
+    { id: 'contacts', label: 'Emergency Contacts', icon: Phone, roles: ['student', 'admin'] },
+    { id: 'Quiz', label: 'Gamification', icon: IoGameController, roles: ['student'] },
   ];
 
   const visibleItems = navigationItems.filter(item => 
