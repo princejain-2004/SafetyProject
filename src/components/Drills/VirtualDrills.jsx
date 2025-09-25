@@ -1,293 +1,314 @@
-import React, { useState } from 'react';
-import { 
-  Play, 
-  Clock, 
-  Target, 
-  Award, 
-  Users, 
-  TrendingUp,
-  CheckCircle,
-  AlertTriangle,
-  Flame,
-  CloudLightning,
-  Shield
-} from 'lucide-react';
+import { useEffect, useRef } from "react";
+import * as THREE from "three";
 
-export default function VirtualDrills() {
-  const [selectedDrill, setSelectedDrill] = useState(null);
-  const [activeTab, setActiveTab] = useState('available');
+export default function VirtualEarthquakeDrill() {
+  const containerRef = useRef(null);
 
-  const drills = [
-    {
-      id: '1',
-      title: 'School Fire Evacuation',
-      type: 'fire',
-      description: 'Practice safe and efficient evacuation procedures during a fire emergency.',
-      duration: 10,
-      difficulty: 'beginner',
-      points: 200,
-      participants: 234,
-      averageScore: 87,
-      completed: true,
-      lastScore: 92
-    },
-    {
-      id: '2',
-      title: 'Earthquake Drop, Cover & Hold',
-      type: 'earthquake',
-      description: 'Master the essential earthquake response actions and post-quake procedures.',
-      duration: 8,
-      difficulty: 'beginner',
-      points: 180,
-      participants: 189,
-      averageScore: 85,
-      completed: false
-    },
-    {
-      id: '3',
-      title: 'Severe Weather Shelter',
-      type: 'severe-weather',
-      description: 'Learn proper sheltering techniques during tornado and severe weather warnings.',
-      duration: 12,
-      difficulty: 'intermediate',
-      points: 250,
-      participants: 156,
-      averageScore: 79,
-      completed: true,
-      lastScore: 88
-    },
-    {
-      id: '4',
-      title: 'Campus Lockdown Protocol',
-      type: 'lockdown',
-      description: 'Practice security procedures during lockdown situations and threat assessments.',
-      duration: 15,
-      difficulty: 'advanced',
-      points: 300,
-      participants: 98,
-      averageScore: 82,
-      completed: false
+  useEffect(() => {
+    let scene, camera, renderer, clock, mouseControls, keyboardControls;
+    let ground, bookcase, table, safeSpot;
+    let shakeStartTime = 0;
+    let isShaking = false;
+    let isDrillActive = false;
+    let isSafe = false;
+
+    const SHAKE_DURATION = 10000; // 10s
+    const COLLAPSE_TIME = 8000; // 8s
+
+    // DOM references
+    const infoPanel = document.getElementById("info-panel");
+    const startButton = document.getElementById("start-button");
+    const messageBox = document.getElementById("message-box");
+    const messageTitle = document.getElementById("message-title");
+    const messageText = document.getElementById("message-text");
+    const continueButton = document.getElementById("continue-button");
+
+    function init() {
+      // Scene, Camera, Renderer
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x0d1117);
+
+      camera = new THREE.PerspectiveCamera(
+        75,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        1000
+      );
+      camera.position.set(0, 1.6, 5);
+
+      renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      containerRef.current.appendChild(renderer.domElement);
+
+      // Lights
+      scene.add(new THREE.AmbientLight(0x404040));
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.7);
+      directionalLight.position.set(5, 10, 7.5);
+      scene.add(directionalLight);
+
+      // Ground
+      const groundGeometry = new THREE.PlaneGeometry(20, 20);
+      ground = new THREE.Mesh(
+        groundGeometry,
+        new THREE.MeshLambertMaterial({ color: 0x2d3748 })
+      );
+      ground.rotation.x = -Math.PI / 2;
+      scene.add(ground);
+
+      // Walls
+      const wallMaterial = new THREE.MeshLambertMaterial({ color: 0x1a202c });
+      const backWall = new THREE.Mesh(new THREE.PlaneGeometry(20, 10), wallMaterial);
+      backWall.position.set(0, 5, -10);
+      scene.add(backWall);
+
+      const rightWall = new THREE.Mesh(new THREE.PlaneGeometry(20, 10), wallMaterial);
+      rightWall.rotation.y = -Math.PI / 2;
+      rightWall.position.set(10, 5, 0);
+      scene.add(rightWall);
+
+      const leftWall = new THREE.Mesh(new THREE.PlaneGeometry(20, 10), wallMaterial);
+      leftWall.rotation.y = Math.PI / 2;
+      leftWall.position.set(-10, 5, 0);
+      scene.add(leftWall);
+
+      // Bookcase
+      bookcase = new THREE.Mesh(
+        new THREE.BoxGeometry(2, 5, 0.5),
+        new THREE.MeshLambertMaterial({ color: 0x8b5c5c })
+      );
+      bookcase.position.set(-5, 2.5, -9);
+      scene.add(bookcase);
+
+      // Table (safe spot)
+      table = new THREE.Mesh(
+        new THREE.BoxGeometry(3, 1, 1.5),
+        new THREE.MeshLambertMaterial({ color: 0x422a1f })
+      );
+      table.position.set(0, 0.5, -4);
+      scene.add(table);
+
+      safeSpot = new THREE.Mesh(
+        new THREE.BoxGeometry(1.5, 0.1, 1),
+        new THREE.MeshBasicMaterial({ color: 0x48bb78, transparent: true, opacity: 0.5 })
+      );
+      safeSpot.position.set(0, 0.55, -4);
+      scene.add(safeSpot);
+
+      // Lamp
+      const lamp = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.2, 0.2, 1, 16),
+        new THREE.MeshLambertMaterial({ color: 0xffff00 })
+      );
+      lamp.position.set(2, 3, -8);
+      scene.add(lamp);
+
+      // Controls
+      mouseControls = { isDragging: false, previousMouseX: 0, previousMouseY: 0 };
+      keyboardControls = { up: false, down: false, left: false, right: false };
+
+      // Mouse
+      renderer.domElement.addEventListener("mousedown", (e) => {
+        mouseControls.isDragging = true;
+        mouseControls.previousMouseX = e.clientX;
+        mouseControls.previousMouseY = e.clientY;
+      });
+      renderer.domElement.addEventListener("mouseup", () => {
+        mouseControls.isDragging = false;
+      });
+      renderer.domElement.addEventListener("mousemove", (e) => {
+        if (mouseControls.isDragging) {
+          const dx = e.clientX - mouseControls.previousMouseX;
+          const dy = e.clientY - mouseControls.previousMouseY;
+          camera.rotation.y -= dx * 0.005;
+          camera.rotation.x -= dy * 0.005;
+          camera.rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, camera.rotation.x));
+          mouseControls.previousMouseX = e.clientX;
+          mouseControls.previousMouseY = e.clientY;
+        }
+      });
+
+      // Keyboard
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "w") keyboardControls.up = true;
+        if (e.key === "s") keyboardControls.down = true;
+        if (e.key === "a") keyboardControls.left = true;
+        if (e.key === "d") keyboardControls.right = true;
+      });
+      document.addEventListener("keyup", (e) => {
+        if (e.key === "w") keyboardControls.up = false;
+        if (e.key === "s") keyboardControls.down = false;
+        if (e.key === "a") keyboardControls.left = false;
+        if (e.key === "d") keyboardControls.right = false;
+      });
+
+      // Start button
+      startButton.addEventListener("click", () => {
+        infoPanel.style.display = "none";
+        isDrillActive = true;
+        shakeStartTime = clock.getElapsedTime();
+        isShaking = true;
+        showMessage(
+          "Drill Started!",
+          "Earthquake detected! Stay calm and find a safe spot under a sturdy table. Do not go outside!",
+          "Get to Safety"
+        );
+      });
+
+      continueButton.addEventListener("click", () => {
+        messageBox.style.display = "none";
+      });
+
+      clock = new THREE.Clock();
+      animate();
     }
-  ];
 
-  const getTypeIcon = (type) => {
-    switch (type) {
-      case 'fire': return Flame;
-      case 'earthquake': return AlertTriangle;
-      case 'severe-weather': return CloudLightning;
-      case 'lockdown': return Shield;
-      default: return Target;
+    function animate() {
+      requestAnimationFrame(animate);
+
+      if (isDrillActive) {
+        const delta = clock.getDelta();
+        const speed = 5 * delta;
+        const direction = new THREE.Vector3();
+
+        if (keyboardControls.up) direction.z -= 1;
+        if (keyboardControls.down) direction.z += 1;
+        if (keyboardControls.left) direction.x -= 1;
+        if (keyboardControls.right) direction.x += 1;
+
+        direction.normalize();
+        direction.applyQuaternion(camera.quaternion);
+        camera.position.add(direction.multiplyScalar(speed));
+
+        // Safe spot check
+        const pos = camera.position.clone();
+        if (
+          pos.x > safeSpot.position.x - 1.5 &&
+          pos.x < safeSpot.position.x + 1.5 &&
+          pos.z > safeSpot.position.z - 1.5 &&
+          pos.z < safeSpot.position.z + 1.5
+        ) {
+          if (!isSafe) {
+            isSafe = true;
+            showMessage(
+              "You are safe!",
+              "You correctly identified and took shelter in a safe spot. You are protected!",
+              "End Drill"
+            );
+            continueButton.onclick = () => {
+              isDrillActive = false;
+              isShaking = false;
+              showMessage(
+                "Drill Complete!",
+                "🎉 Congratulations! You successfully completed the virtual earthquake drill.",
+                "Restart Drill"
+              );
+              continueButton.onclick = () => window.location.reload();
+            };
+          }
+        }
+      }
+
+      // Shake effect
+      if (isShaking) {
+        const elapsed = clock.getElapsedTime() - shakeStartTime;
+        camera.position.x += Math.sin(elapsed * 50) * 0.02;
+        camera.position.y += Math.cos(elapsed * 50) * 0.02;
+
+        if (elapsed > COLLAPSE_TIME && bookcase.position.x > -10) {
+          bookcase.rotation.z += 0.05;
+          bookcase.position.y -= 0.02;
+          bookcase.position.x -= 0.02;
+        }
+
+        if (elapsed > SHAKE_DURATION) {
+          isShaking = false;
+          showMessage(
+            "Shaking Stopped.",
+            "The shaking has stopped. Now, carefully move outside to an open area.",
+            "End Drill"
+          );
+          continueButton.onclick = () => {
+            isDrillActive = false;
+            showMessage(
+              "Drill Complete!",
+              "🎉 Congratulations! You successfully completed the virtual earthquake drill.",
+              "Restart Drill"
+            );
+            continueButton.onclick = () => window.location.reload();
+          };
+        }
+      }
+
+      renderer.render(scene, camera);
     }
-  };
 
-  const getTypeColor = (type) => {
-    switch (type) {
-      case 'fire': return 'text-red-600 bg-red-100';
-      case 'earthquake': return 'text-yellow-600 bg-yellow-100';
-      case 'severe-weather': return 'text-blue-600 bg-blue-100';
-      case 'lockdown': return 'text-purple-600 bg-purple-100';
-      default: return 'text-gray-600 bg-gray-100';
+    function showMessage(title, text, buttonText) {
+      messageBox.style.display = "flex"; // center
+      messageTitle.textContent = title;
+      messageText.textContent = text;
+      continueButton.textContent = buttonText;
+      continueButton.style.display = "inline-block";
     }
-  };
 
-  const getDifficultyColor = (difficulty) => {
-    switch (difficulty) {
-      case 'beginner': return 'text-green-700 bg-green-100';
-      case 'intermediate': return 'text-yellow-700 bg-yellow-100';
-      case 'advanced': return 'text-red-700 bg-red-100';
-      default: return 'text-gray-700 bg-gray-100';
-    }
-  };
+    window.addEventListener("resize", () => {
+      if (!camera || !renderer) return;
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
 
-  const recentResults = [
-    { drill: 'School Fire Evacuation', score: 92, date: '2 days ago', improvement: '+5%' },
-    { drill: 'Severe Weather Shelter', score: 88, date: '1 week ago', improvement: '+12%' },
-    { drill: 'Earthquake Response', score: 85, date: '2 weeks ago', improvement: '+8%' },
-  ];
+    init();
+
+    return () => {
+      if (renderer) containerRef.current.removeChild(renderer.domElement);
+    };
+  }, []);
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Virtual Emergency Drills</h1>
-          <p className="text-gray-600 mt-1">Practice emergency procedures in a safe, simulated environment</p>
-        </div>
-        <div className="flex items-center space-x-2">
-          <Award className="w-5 h-5 text-yellow-500" />
-          <span className="text-sm font-medium text-gray-700">Earn points for participation</span>
+    <div className="w-full h-screen relative">
+      {/* Three.js Canvas */}
+      <div ref={containerRef} className="w-full h-full" />
+
+      {/* Info Panel */}
+      <div
+        id="info-panel"
+        className="absolute inset-0 flex items-center justify-center z-20"
+      >
+        <div className="w-[90%] max-w-lg bg-slate-900/90 backdrop-blur-lg border border-blue-500 rounded-2xl shadow-2xl p-8 text-center animate-fadeIn">
+          <h1 className="text-3xl font-extrabold mb-4 text-blue-400 drop-shadow-lg">
+            Virtual Earthquake Drill
+          </h1>
+          <p className="text-lg text-gray-200 mb-6">
+            Click and drag to look around. Use{" "}
+            <span className="font-semibold text-blue-300">W/A/S/D</span> to move.
+            <br />
+            Find a safe spot!
+          </p>
+          <button
+            id="start-button"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-200"
+          >
+            🚀 Start Drill
+          </button>
         </div>
       </div>
 
-      {/* Tab Navigation */}
-      <div className="flex space-x-4 border-b border-gray-200">
-        <button
-          onClick={() => setActiveTab('available')}
-          className={`py-2 px-4 font-medium transition-colors ${
-            activeTab === 'available'
-              ? 'text-blue-600 border-b-2 border-blue-600'
-              : 'text-gray-500 hover:text-gray-700'
-          }`}
-        >
-          Available Drills
-        </button>
-        <button
-          onClick={() => setActiveTab('results')}
-          className={`py-2 px-4 font-medium transition-colors ${
-            activeTab === 'results'
-              ? 'text-blue-600 border-b-2 border-blue-600'
-              : 'text-gray-500 hover:text-gray-700'
-          }`}
-        >
-          My Results
-        </button>
+      {/* ✅ Single Message Box */}
+      <div
+        id="message-box"
+        className="hidden absolute inset-0 flex items-center justify-center z-30"
+      >
+        <div className="w-[90%] max-w-md bg-slate-900/95 backdrop-blur-lg border border-green-500 rounded-2xl shadow-2xl p-6 text-center animate-fadeIn">
+          <h2 id="message-title" className="text-2xl font-bold text-green-400 mb-2" />
+          <p id="message-text" className="text-base text-gray-200 mb-4" />
+          <button
+            id="continue-button"
+            className="hidden bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg shadow-md transform hover:scale-105 transition-all duration-200"
+          >
+            Continue
+          </button>
+        </div>
       </div>
-
-      {activeTab === 'available' ? (
-        /* Available Drills */
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {drills.map((drill) => {
-            const IconComponent = getTypeIcon(drill.type);
-            return (
-              <div
-                key={drill.id}
-                className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow"
-              >
-                <div className="p-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className={`p-2 rounded-lg ${getTypeColor(drill.type)}`}>
-                      <IconComponent className="w-6 h-6" />
-                    </div>
-                    {drill.completed && (
-                      <div className="flex items-center space-x-1 bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">
-                        <CheckCircle className="w-3 h-3" />
-                        <span>Completed</span>
-                      </div>
-                    )}
-                  </div>
-
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{drill.title}</h3>
-                  <p className="text-gray-600 text-sm mb-4">{drill.description}</p>
-
-                  <div className="flex items-center justify-between mb-4">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium capitalize ${getDifficultyColor(drill.difficulty)}`}>
-                      {drill.difficulty}
-                    </span>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium capitalize ${getTypeColor(drill.type)}`}>
-                      {drill.type.replace('-', ' ')}
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-4 mb-4 text-sm">
-                    <div className="text-center">
-                      <div className="flex items-center justify-center mb-1">
-                        <Clock className="w-4 h-4 text-gray-400" />
-                      </div>
-                      <p className="font-medium text-gray-900">{drill.duration} min</p>
-                      <p className="text-gray-500 text-xs">Duration</p>
-                    </div>
-                    <div className="text-center">
-                      <div className="flex items-center justify-center mb-1">
-                        <Users className="w-4 h-4 text-gray-400" />
-                      </div>
-                      <p className="font-medium text-gray-900">{drill.participants}</p>
-                      <p className="text-gray-500 text-xs">Participants</p>
-                    </div>
-                    <div className="text-center">
-                      <div className="flex items-center justify-center mb-1">
-                        <Award className="w-4 h-4 text-yellow-500" />
-                      </div>
-                      <p className="font-medium text-yellow-600">{drill.points}</p>
-                      <p className="text-gray-500 text-xs">Points</p>
-                    </div>
-                  </div>
-
-                  {drill.completed && drill.lastScore && (
-                    <div className="bg-green-50 p-3 rounded-lg mb-4">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-green-700">Last Score</span>
-                        <span className="text-lg font-bold text-green-700">{drill.lastScore}%</span>
-                      </div>
-                    </div>
-                  )}
-
-                  <button
-                    className={`w-full py-2 px-4 rounded-md font-medium transition-colors flex items-center justify-center space-x-2 ${
-                      drill.completed
-                        ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
-                        : 'bg-blue-600 text-white hover:bg-blue-700'
-                    }`}
-                  >
-                    <Play className="w-4 h-4" />
-                    <span>{drill.completed ? 'Practice Again' : 'Start Drill'}</span>
-                  </button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      ) : (
-        /* Results Tab */
-        <div className="space-y-6">
-          {/* Performance Overview */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="text-sm font-medium text-gray-600">Drills Completed</h3>
-                <CheckCircle className="w-5 h-5 text-green-500" />
-              </div>
-              <p className="text-2xl font-bold text-gray-900">
-                {drills.filter(d => d.completed).length}/{drills.length}
-              </p>
-              <p className="text-sm text-gray-500 mt-1">
-                {Math.round((drills.filter(d => d.completed).length / drills.length) * 100)}% completion rate
-              </p>
-            </div>
-
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="text-sm font-medium text-gray-600">Average Score</h3>
-                <Target className="w-5 h-5 text-blue-500" />
-              </div>
-              <p className="text-2xl font-bold text-gray-900">89%</p>
-              <p className="text-sm text-green-600 mt-1">↑ +7% from last month</p>
-            </div>
-
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="text-sm font-medium text-gray-600">Points Earned</h3>
-                <Award className="w-5 h-5 text-yellow-500" />
-              </div>
-              <p className="text-2xl font-bold text-gray-900">750</p>
-              <p className="text-sm text-gray-500 mt-1">From drill participation</p>
-            </div>
-          </div>
-
-          {/* Recent Results */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-gray-900">Recent Results</h2>
-                <TrendingUp className="w-5 h-5 text-green-500" />
-              </div>
-              <div className="space-y-4">
-                {recentResults.map((result, index) => (
-                  <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                    <div>
-                      <h4 className="font-medium text-gray-900">{result.drill}</h4>
-                      <p className="text-sm text-gray-500">{result.date}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-lg font-bold text-gray-900">{result.score}%</p>
-                      <p className="text-sm text-green-600">{result.improvement}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

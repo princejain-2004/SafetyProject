@@ -7,16 +7,16 @@ import StudentDashboard from './components/Dashboard/StudentDashboard';
 import AdminDashboard from './components/Dashboard/AdminDashboard';
 import EducationModules from './components/Education/EducationModules';
 import EmergencyAlerts from './components/Alerts/EmergencyAlerts';
-import VirtualDrills from './components/Drills/VirtualDrills';
+import VirtualEarthquakeDrill from './components/Drills/VirtualDrills.jsx'; 
 import EmergencyContacts from './components/Contacts/EmergencyContacts';
 import Quiz from './components/Quiz/Quiz';
-import { DisasterLandingPage } from './components/LandingPage/LandingPage'; // <--- import Landing Page
+import { DisasterLandingPage } from './components/LandingPage/LandingPage';
 
 function AppContent() {
   const { user, loading } = useAuth();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [showLanding, setShowLanding] = useState(true); // <-- NEW STATE
+  const [showLanding, setShowLanding] = useState(true);
 
   useEffect(() => {
     // Close mobile menu when tab changes
@@ -25,12 +25,12 @@ function AppContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
-        </div>
-      </div>
+      <div className="flex items-center justify-center h-screen bg-gray-100">
+  <div className="flex flex-col items-center">
+    <div className="animate-spin h-12 w-12 border-4 border-blue-600 border-t-transparent rounded-full"></div>
+    <p className="mt-4 text-gray-600">Loading...</p>
+  </div>
+</div>
     );
   }
 
@@ -54,7 +54,7 @@ function AppContent() {
       case 'alerts':
         return <EmergencyAlerts />;
       case 'drills':
-        return <VirtualDrills />;
+        return <VirtualEarthquakeDrill />; 
       case 'contacts':
         return <EmergencyContacts />;
       case 'Quiz':
