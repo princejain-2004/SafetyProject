@@ -1,14 +1,5 @@
 import React, { useState } from 'react';
-import { 
-  BookOpen, 
-  Clock, 
-  Star, 
-  Play, 
-  CheckCircle, 
-  Award,
-  Filter,
-  Search
-} from 'lucide-react';
+import { BookOpen, Clock, Star, Play, CheckCircle, Award, Filter, Search } from 'lucide-react';
 
 export default function EducationModules() {
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -17,75 +8,55 @@ export default function EducationModules() {
   const modules = [
     {
       id: '1',
-      title: 'Fire Safety Fundamentals',
-      description: 'Learn essential fire safety principles, evacuation procedures, and prevention techniques.',
-      category: 'Fire Safety',
-      difficulty: 'beginner',
-      duration: 25,
-      points: 150,
-      completed: true,
+      title: 'How to Protect Yourself During an Earthquake',
+      description: 'Learn essential earthquake safety measures, including the "Drop, Cover, and Hold On" technique.',
+      category: 'Earthquake Safety',
+      difficulty: 'intermediate',
+      duration: 30,
+      points: 200,
+      completed: false,
       rating: 4.8,
-      thumbnail: 'https://images.pexels.com/photos/4386321/pexels-photo-4386321.jpeg?auto=compress&cs=tinysrgb&w=400'
+      thumbnail: 'https://example.com/earthquake-thumbnail.jpg',
+      videoUrl: 'https://www.youtube.com/watch?v=BLEPakj1YTY'
     },
     {
       id: '2',
-      title: 'Earthquake Response Tactics',
-      description: 'Master drop, cover, and hold techniques plus post-earthquake safety protocols.',
-      category: 'Earthquake',
-      difficulty: 'intermediate',
-      duration: 35,
-      points: 200,
+      title: 'Natural Disasters Compilation',
+      description: 'An overview of various natural disasters and their impacts.',
+      category: 'Natural Disasters',
+      difficulty: 'beginner',
+      duration: 40,
+      points: 180,
       completed: false,
-      rating: 4.9,
-      thumbnail: 'https://images.pexels.com/photos/9978539/pexels-photo-9978539.jpeg?auto=compress&cs=tinysrgb&w=400'
+      rating: 4.7,
+      thumbnail: 'https://example.com/natural-disasters-thumbnail.jpg',
+      videoUrl: 'https://www.youtube.com/watch?v=HaEmIakO7f4'
     },
     {
       id: '3',
-      title: 'First Aid Essentials',
-      description: 'Critical first aid skills for emergency situations and basic life support.',
-      category: 'Medical',
-      difficulty: 'beginner',
-      duration: 45,
-      points: 250,
+      title: 'How To Survive Floods?',
+      description: 'Essential tips and strategies to survive during a flood.',
+      category: 'Flood Safety',
+      difficulty: 'intermediate',
+      duration: 35,
+      points: 220,
       completed: false,
-      rating: 4.7,
-      thumbnail: 'https://images.pexels.com/photos/263337/pexels-photo-263337.jpeg?auto=compress&cs=tinysrgb&w=400'
+      rating: 4.9,
+      thumbnail: 'https://example.com/flood-survival-thumbnail.jpg',
+      videoUrl: 'https://youtu.be/pi_nUPcQz_A?feature=shared'
     },
     {
       id: '4',
-      title: 'Severe Weather Preparedness',
-      description: 'Stay safe during tornadoes, hurricanes, and other extreme weather events.',
-      category: 'Weather',
-      difficulty: 'intermediate',
-      duration: 30,
-      points: 180,
-      completed: true,
-      rating: 4.6,
-      thumbnail: 'https://images.pexels.com/photos/1446076/pexels-photo-1446076.jpeg?auto=compress&cs=tinysrgb&w=400'
-    },
-    {
-      id: '5',
-      title: 'Lockdown Procedures',
-      description: 'Understanding security protocols and emergency lockdown procedures.',
-      category: 'Security',
+      title: 'How To Survive A House Fire?',
+      description: 'Critical steps to take during a house fire to ensure safety.',
+      category: 'Fire Safety',
       difficulty: 'advanced',
-      duration: 20,
-      points: 300,
+      duration: 25,
+      points: 250,
       completed: false,
-      rating: 4.9,
-      thumbnail: 'https://images.pexels.com/photos/8923181/pexels-photo-8923181.jpeg?auto=compress&cs=tinysrgb&w=400'
-    },
-    {
-      id: '6',
-      title: 'Chemical Spill Response',
-      description: 'Safe handling and response procedures for hazardous material incidents.',
-      category: 'Hazmat',
-      difficulty: 'advanced',
-      duration: 40,
-      points: 280,
-      completed: false,
-      rating: 4.8,
-      thumbnail: 'https://images.pexels.com/photos/2280547/pexels-photo-2280547.jpeg?auto=compress&cs=tinysrgb&w=400'
+      rating: 5.0,
+      thumbnail: 'https://example.com/house-fire-survival-thumbnail.jpg',
+      videoUrl: 'https://youtu.be/Xgc90CoJbDI?feature=shared'
     }
   ];
 
@@ -168,9 +139,11 @@ export default function EducationModules() {
                 className="w-full h-40 object-cover"
               />
               <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-                <button className="bg-white bg-opacity-90 p-3 rounded-full hover:bg-opacity-100 transition-all">
-                  <Play className="w-6 h-6 text-blue-600" />
-                </button>
+                <a href={module.videoUrl} target="_blank" rel="noopener noreferrer">
+                  <button className="bg-white bg-opacity-90 p-3 rounded-full hover:bg-opacity-100 transition-all">
+                    <Play className="w-6 h-6 text-blue-600" />
+                  </button>
+                </a>
               </div>
               {module.completed && (
                 <div className="absolute top-3 right-3 bg-green-500 p-1 rounded-full">
@@ -209,15 +182,18 @@ export default function EducationModules() {
                 </div>
               </div>
 
-              <button
-                className={`w-full py-2 px-4 rounded-md font-medium transition-colors ${
-                  module.completed
-                    ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                    : 'bg-blue-600 text-white hover:bg-blue-700'
-                }`}
-              >
-                {module.completed ? 'Review Module' : 'Start Learning'}
-              </button>
+              <a
+  href={module.videoUrl}
+  target="_blank"
+  rel="noopener noreferrer"
+  className={`w-full block text-center py-2 px-4 rounded-md font-medium transition-colors ${
+    module.completed
+      ? 'bg-green-100 text-green-700 hover:bg-green-200'
+      : 'bg-blue-600 text-white hover:bg-blue-700'
+  }`}
+>
+  {module.completed ? 'Review Module' : 'Start Learning'}
+</a>
             </div>
           </div>
         ))}
