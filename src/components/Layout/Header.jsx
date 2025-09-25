@@ -23,9 +23,10 @@ export default function Header({ onMenuToggle, isMobileMenuOpen }) {
             </button>
             
             <div className="flex items-center space-x-3">
-              <div className="bg-red-600 p-2 rounded-lg">
-                <Shield className="w-6 h-6 text-white" />
+              <div className="flex items-center space-x-3">
+                <img src="src\Assets\Logo.png" alt="SafetyFirst Logo" className="w-20 h-15" />
               </div>
+
               <div>
                 <h1 className="text-xl font-bold text-gray-900">SafetyFirst</h1>
                 <p className="text-xs text-gray-500 hidden sm:block">Emergency Preparedness Platform</p>

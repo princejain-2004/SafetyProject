@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import LoginForm from './components/Auth/LoginForm';
 import Header from './components/Layout/Header';
@@ -13,10 +13,38 @@ import Quiz from './components/Quiz/Quiz';
 import { DisasterLandingPage } from './components/LandingPage/LandingPage';
 
 function AppContent() {
-  const { user, loading } = useAuth();
+  const { user, loading, logout } = useAuth();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showLanding, setShowLanding] = useState(true);
+
+  // Auto logout timer (e.g., 15 minutes = 900000 ms)
+  const AUTO_LOGOUT_TIME = 15 * 60 * 1000;
+  const timerRef = useRef(null);
+
+  const resetTimer = () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    if (user) {
+      timerRef.current = setTimeout(() => {
+        logout(); // Auto logout after timeout
+        alert("You have been logged out due to inactivity.");
+      }, AUTO_LOGOUT_TIME);
+    }
+  };
+
+  useEffect(() => {
+    // Listen for user activity
+    const events = ["mousemove", "keydown", "click", "scroll"];
+    events.forEach((e) => window.addEventListener(e, resetTimer));
+
+    // Start timer initially
+    resetTimer();
+
+    return () => {
+      events.forEach((e) => window.removeEventListener(e, resetTimer));
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, [user]); // restart whenever user changes (login/logout)
 
   useEffect(() => {
     // Close mobile menu when tab changes
@@ -26,11 +54,11 @@ function AppContent() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-100">
-  <div className="flex flex-col items-center">
-    <div className="animate-spin h-12 w-12 border-4 border-blue-600 border-t-transparent rounded-full"></div>
-    <p className="mt-4 text-gray-600">Loading...</p>
-  </div>
-</div>
+        <div className="flex flex-col items-center">
+          <div className="animate-spin h-12 w-12 border-4 border-blue-600 border-t-transparent rounded-full"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
     );
   }
 

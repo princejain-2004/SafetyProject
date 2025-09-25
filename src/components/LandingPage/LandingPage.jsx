@@ -7,8 +7,8 @@ export const DisasterLandingPage = ({ onGetStartedClick }) => {
       {/* Header */}
       <header className="p-6 flex justify-between items-center">
         <div className="flex items-center space-x-3">
-          <AlertTriangle className="w-10 h-10 text-yellow-400" />
-          <h1 className="text-2xl font-bold">DisasterReady</h1>
+          <img src="src\Assets\Logo.png" alt="SafetyFirst Logo" className="w-20 h-15" />
+          <h1 className="text-2xl font-bold">SafetyFirst</h1>
         </div>
         {/* <button
           onClick={onGetStartedClick}

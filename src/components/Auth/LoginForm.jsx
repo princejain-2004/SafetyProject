@@ -39,8 +39,8 @@ export default function LoginForm() {
       <div className="max-w-md w-full space-y-8">
         {/* Header */}
         <div className="text-center">
-          <div className="bg-white p-3 rounded-full w-16 h-16 mx-auto mb-4 shadow-lg">
-            <Shield className="w-10 h-10 text-red-600" />
+          <div className="w-50 h-20 mx-auto mb-4">
+          <img src="src\Assets\Logo.png" alt="SafetyFirst Logo" className="w-50 h-20 mx-auto" />
           </div>
           <h1 className="text-3xl font-bold text-white mb-2">SafetyFirst</h1>
           <p className="text-blue-100">Emergency Preparedness Platform</p>
