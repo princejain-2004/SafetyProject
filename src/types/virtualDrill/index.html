@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Earthquake Drill</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Three.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background-color: #0d1117;
+            color: #c9d1d9;
+        }
+        canvas {
+            display: block;
+            touch-action: none;
+        }
+        #info-panel {
+            position: absolute;
+            top: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 600px;
+            background-color: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(8px);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            border: 2px solid #3b82f6;
+            animation: fadeIn 0.8s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+        #message-box {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 500px;
+            background-color: rgba(30, 41, 59, 0.9);
+            backdrop-filter: blur(8px);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            border: 2px solid #48bb78;
+            animation: slideUp 0.8s ease-out;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+        #message-box h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #48bb78;
+        }
+        .action-button {
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        .action-button:active {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+<div id="info-panel">
+    <h1 class="text-2xl font-bold mb-2 text-blue-400">Virtual Earthquake Drill</h1>
+    <p class="text-lg mb-4">Click and drag to look around the room. Use W/A/S/D to move. Find a safe spot!</p>
+    <button id="start-button" class="action-button bg-blue-500 text-white font-semibold py-2 px-6 rounded-lg">Start Drill</button>
+</div>
+
+<div id="message-box" class="hidden">
+    <h2 id="message-title"></h2>
+    <p id="message-text" class="text-sm mt-2"></p>
+    <button id="continue-button" class="action-button bg-green-500 text-white font-semibold py-2 px-6 rounded-lg mt-4 hidden">Continue</button>
+</div>
+
+<script>
+    window.onload = function () {
+        // Scene setup
+        let scene, camera, renderer, clock, mouseControls, keyboardControls;
+        let ground, bookcase, table, safeSpot;
+        let shakeStartTime = 0;
+        let isShaking = false;
+        let isDrillActive = false;
+        let isSafe = false;
+        const SHAKE_DURATION = 10000; // 10 seconds of shaking
+        const COLLAPSE_TIME = 8000; // Bookcase falls at 8 seconds
+
+        // Status messages
+        const infoPanel = document.getElementById('info-panel');
+        const startButton = document.getElementById('start-button');
+        const messageBox = document.getElementById('message-box');
+        const messageTitle = document.getElementById('message-title');
+        const messageText = document.getElementById('message-text');
+        const continueButton = document.getElementById('continue-button');
+
+        function init() {
+            // Scene, Camera, Renderer
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0d1117);
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 1.6, 5);
+            camera.lookAt(0, 1.6, 0);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
+
+            // Lights
+            const ambientLight = new THREE.AmbientLight(0x404040);
+            scene.add(ambientLight);
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.7);
+            directionalLight.position.set(5, 10, 7.5);
+            scene.add(directionalLight);
+
+            // Create a simple room
+            const roomMaterial = new THREE.MeshLambertMaterial({ color: 0x2d3748 });
+            const groundGeometry = new THREE.PlaneGeometry(20, 20);
+            ground = new THREE.Mesh(groundGeometry, roomMaterial);
+            ground.rotation.x = -Math.PI / 2;
+            ground.position.y = 0;
+            scene.add(ground);
+
+            const wallMaterial = new THREE.MeshLambertMaterial({ color: 0x1a202c });
+            const backWall = new THREE.Mesh(new THREE.PlaneGeometry(20, 10), wallMaterial);
+            backWall.position.set(0, 5, -10);
+            scene.add(backWall);
+
+            const rightWall = new THREE.Mesh(new THREE.PlaneGeometry(20, 10), wallMaterial);
+            rightWall.rotation.y = -Math.PI / 2;
+            rightWall.position.set(10, 5, 0);
+            scene.add(rightWall);
+
+            const leftWall = new THREE.Mesh(new THREE.PlaneGeometry(20, 10), wallMaterial);
+            leftWall.rotation.y = Math.PI / 2;
+            leftWall.position.set(-10, 5, 0);
+            scene.add(leftWall);
+
+            // Create a shaky bookcase
+            const bookcaseGeometry = new THREE.BoxGeometry(2, 5, 0.5);
+            const bookcaseMaterial = new THREE.MeshLambertMaterial({ color: 0x8b5c5c });
+            bookcase = new THREE.Mesh(bookcaseGeometry, bookcaseMaterial);
+            bookcase.position.set(-5, 2.5, -9);
+            scene.add(bookcase);
+
+            // Create a sturdy table (safe spot)
+            const tableGeometry = new THREE.BoxGeometry(3, 1, 1.5);
+            const tableMaterial = new THREE.MeshLambertMaterial({ color: 0x422a1f });
+            table = new THREE.Mesh(tableGeometry, tableMaterial);
+            table.position.set(0, 0.5, -4);
+            scene.add(table);
+
+            const safeSpotGeometry = new THREE.BoxGeometry(1.5, 0.1, 1);
+            const safeSpotMaterial = new THREE.MeshBasicMaterial({ color: 0x48bb78, transparent: true, opacity: 0.5 });
+            safeSpot = new THREE.Mesh(safeSpotGeometry, safeSpotMaterial);
+            safeSpot.position.set(0, 0.55, -4);
+            scene.add(safeSpot);
+
+            // Add an object to drop for effect
+            const lampGeometry = new THREE.CylinderGeometry(0.2, 0.2, 1, 16);
+            const lampMaterial = new THREE.MeshLambertMaterial({ color: 0xffff00 });
+            const lamp = new THREE.Mesh(lampGeometry, lampMaterial);
+            lamp.position.set(2, 3, -8);
+            scene.add(lamp);
+
+            // Controls
+            mouseControls = {
+                isDragging: false,
+                previousMouseX: 0,
+                previousMouseY: 0
+            };
+            keyboardControls = {
+                up: false, down: false, left: false, right: false
+            };
+
+            // Event Listeners for mouse controls
+            renderer.domElement.addEventListener('mousedown', (event) => {
+                mouseControls.isDragging = true;
+                mouseControls.previousMouseX = event.clientX;
+                mouseControls.previousMouseY = event.clientY;
+            });
+            renderer.domElement.addEventListener('mouseup', () => {
+                mouseControls.isDragging = false;
+            });
+            renderer.domElement.addEventListener('mousemove', (event) => {
+                if (mouseControls.isDragging) {
+                    const deltaX = event.clientX - mouseControls.previousMouseX;
+                    const deltaY = event.clientY - mouseControls.previousMouseY;
+                    camera.rotation.y -= deltaX * 0.005;
+                    camera.rotation.x -= deltaY * 0.005;
+                    camera.rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, camera.rotation.x));
+                    mouseControls.previousMouseX = event.clientX;
+                    mouseControls.previousMouseY = event.clientY;
+                }
+            });
+
+            // Event Listeners for WASD keyboard controls
+            document.addEventListener('keydown', (event) => {
+                const key = event.key.toLowerCase();
+                if (key === 'w') keyboardControls.up = true;
+                if (key === 's') keyboardControls.down = true;
+                if (key === 'a') keyboardControls.left = true;
+                if (key === 'd') keyboardControls.right = true;
+            });
+            document.addEventListener('keyup', (event) => {
+                const key = event.key.toLowerCase();
+                if (key === 'w') keyboardControls.up = false;
+                if (key === 's') keyboardControls.down = false;
+                if (key === 'a') keyboardControls.left = false;
+                if (key === 'd') keyboardControls.right = false;
+            });
+
+            // Handle start button
+            startButton.addEventListener('click', () => {
+                infoPanel.style.display = 'none';
+                isDrillActive = true;
+                shakeStartTime = clock.getElapsedTime();
+                isShaking = true;
+                showMessage("Drill Started!", "Earthquake detected! Stay calm and find a safe spot under a sturdy table. Do not go outside!", "Get to Safety");
+            });
+
+            continueButton.addEventListener('click', () => {
+                messageBox.style.display = 'none';
+            });
+
+            clock = new THREE.Clock();
+            animate();
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            if (isDrillActive) {
+                const delta = clock.getDelta();
+                const speed = 5 * delta;
+                const direction = new THREE.Vector3();
+
+                if (keyboardControls.up) {
+                    direction.z -= 1;
+                }
+                if (keyboardControls.down) {
+                    direction.z += 1;
+                }
+                if (keyboardControls.left) {
+                    direction.x -= 1;
+                }
+                if (keyboardControls.right) {
+                    direction.x += 1;
+                }
+
+                direction.normalize();
+                direction.applyQuaternion(camera.quaternion);
+                camera.position.add(direction.multiplyScalar(speed));
+
+                // Check if player is in the safe spot
+                const playerPosition = camera.position.clone();
+                if (playerPosition.x > safeSpot.position.x - 1.5 && playerPosition.x < safeSpot.position.x + 1.5 &&
+                    playerPosition.z > safeSpot.position.z - 1.5 && playerPosition.z < safeSpot.position.z + 1.5) {
+                    if (!isSafe) {
+                        isSafe = true;
+                        showMessage("You are safe!", "You correctly identified and took shelter in a safe spot. You are protected!", "End Drill");
+                        continueButton.style.display = 'block';
+                        continueButton.onclick = () => {
+                            isDrillActive = false;
+                            isShaking = false;
+                            showMessage("Drill Complete!", "Congratulations! You successfully completed the virtual earthquake drill.", "Restart Drill");
+                            continueButton.onclick = () => location.reload();
+                        };
+                    }
+                }
+            }
+            
+            // Earthquake shaking effect
+            if (isShaking) {
+                const elapsed = clock.getElapsedTime() - shakeStartTime;
+                camera.position.x += Math.sin(elapsed * 50) * 0.02;
+                camera.position.y += Math.cos(elapsed * 50) * 0.02;
+                
+                // Bookcase collapse simulation
+                if (elapsed > COLLAPSE_TIME && bookcase.position.x > -10) {
+                    bookcase.rotation.z += 0.05;
+                    bookcase.position.y -= 0.02;
+                    bookcase.position.x -= 0.02;
+                }
+
+                if (elapsed > SHAKE_DURATION) {
+                    isShaking = false;
+                    showMessage("Shaking Stopped.", "The shaking has stopped. Now, carefully move outside to an open area.", "End Drill");
+                    continueButton.style.display = 'block';
+                    continueButton.onclick = () => {
+                        isDrillActive = false;
+                        showMessage("Drill Complete!", "Congratulations! You successfully completed the virtual earthquake drill.", "Restart Drill");
+                        continueButton.onclick = () => location.reload();
+                    };
+                }
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        function showMessage(title, text, buttonText) {
+            messageBox.style.display = 'block';
+            messageTitle.textContent = title;
+            messageText.textContent = text;
+            continueButton.textContent = buttonText;
+        }
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        init();
+    };
+</script>
+</body>
+</html>
