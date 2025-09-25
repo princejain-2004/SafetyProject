@@ -183,17 +183,17 @@ export default function EducationModules() {
               </div>
 
               <a
-  href={module.videoUrl}
-  target="_blank"
-  rel="noopener noreferrer"
-  className={`w-full block text-center py-2 px-4 rounded-md font-medium transition-colors ${
-    module.completed
-      ? 'bg-green-100 text-green-700 hover:bg-green-200'
-      : 'bg-blue-600 text-white hover:bg-blue-700'
-  }`}
->
-  {module.completed ? 'Review Module' : 'Start Learning'}
-</a>
+                href={module.videoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`w-full block text-center py-2 px-4 rounded-md font-medium transition-colors ${
+                  module.completed
+                    ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                }`}
+              >
+                {module.completed ? 'Review Module' : 'Start Learning'}
+              </a>
             </div>
           </div>
         ))}
