@@ -14,6 +14,9 @@ import { DisasterLandingPage } from './components/LandingPage/LandingPage';
 import FAQ from './components/FeedbackAndFaq/FAQ';
 import Feedback from './components/FeedbackAndFaq/Feedback';
 
+// ✅ Import chatbot widget
+import ChatBotWidget from './components/ChatBot/ChatbotWidget.jsx';
+
 function AppContent() {
   const { user, loading } = useAuth();
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -28,11 +31,11 @@ function AppContent() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-100">
-  <div className="flex flex-col items-center">
-    <div className="animate-spin h-12 w-12 border-4 border-blue-600 border-t-transparent rounded-full"></div>
-    <p className="mt-4 text-gray-600">Loading...</p>
-  </div>
-</div>
+        <div className="flex flex-col items-center">
+          <div className="animate-spin h-12 w-12 border-4 border-blue-600 border-t-transparent rounded-full"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
     );
   }
 
@@ -71,7 +74,7 @@ function AppContent() {
   };
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-gray-100 relative">
       {/* Mobile overlay */}
       {isMobileMenuOpen && (
         <div
@@ -100,6 +103,9 @@ function AppContent() {
           </div>
         </main>
       </div>
+
+      {/* ✅ ChatBot always available */}
+      <ChatBotWidget />
     </div>
   );
 }
