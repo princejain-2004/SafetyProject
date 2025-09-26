@@ -3,6 +3,7 @@ import { BookOpen, Clock, Star, Play, CheckCircle, Award, Filter, Search } from 
 
 export default function EducationModules() {
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedClass, setSelectedClass] = useState('1-5'); // ✅ default first class
   const [searchTerm, setSearchTerm] = useState('');
 
   const modules = [
@@ -17,7 +18,8 @@ export default function EducationModules() {
       completed: false,
       rating: 4.8,
       thumbnail: 'https://example.com/earthquake-thumbnail.jpg',
-      videoUrl: 'https://www.youtube.com/watch?v=BLEPakj1YTY'
+      videoUrl: 'https://www.youtube.com/watch?v=BLEPakj1YTY',
+      classLevel: '6-8'
     },
     {
       id: '2',
@@ -30,7 +32,8 @@ export default function EducationModules() {
       completed: false,
       rating: 4.7,
       thumbnail: 'https://example.com/natural-disasters-thumbnail.jpg',
-      videoUrl: 'https://www.youtube.com/watch?v=HaEmIakO7f4'
+      videoUrl: 'https://www.youtube.com/watch?v=HaEmIakO7f4',
+      classLevel: '1-5'
     },
     {
       id: '3',
@@ -43,7 +46,8 @@ export default function EducationModules() {
       completed: false,
       rating: 4.9,
       thumbnail: 'https://example.com/flood-survival-thumbnail.jpg',
-      videoUrl: 'https://youtu.be/pi_nUPcQz_A?feature=shared'
+      videoUrl: 'https://youtu.be/pi_nUPcQz_A?feature=shared',
+      classLevel: '1-5'
     },
     {
       id: '4',
@@ -56,17 +60,23 @@ export default function EducationModules() {
       completed: false,
       rating: 5.0,
       thumbnail: 'https://example.com/house-fire-survival-thumbnail.jpg',
-      videoUrl: 'https://youtu.be/Xgc90CoJbDI?feature=shared'
+      videoUrl: 'https://youtu.be/Xgc90CoJbDI?feature=shared',
+      classLevel: '1-5'
     }
   ];
 
+  // ✅ Filters
   const categories = ['all', ...Array.from(new Set(modules.map(m => m.category)))];
+  const classLevels = ['1-5', '6-8', '9-12']; // ✅ removed "all"
 
+  // ✅ Filtering logic
   const filteredModules = modules.filter(module => {
     const matchesCategory = selectedCategory === 'all' || module.category === selectedCategory;
-    const matchesSearch = module.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          module.description.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesCategory && matchesSearch;
+    const matchesClass = module.classLevel === selectedClass;
+    const matchesSearch =
+      module.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      module.description.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesCategory && matchesClass && matchesSearch;
   });
 
   const getDifficultyColor = (difficulty) => {
@@ -95,6 +105,7 @@ export default function EducationModules() {
       {/* Filters and Search */}
       <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
         <div className="flex flex-col sm:flex-row gap-4">
+          {/* Search */}
           <div className="flex-1">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -107,6 +118,8 @@ export default function EducationModules() {
               />
             </div>
           </div>
+
+          {/* Category Filter */}
           <div className="flex items-center space-x-2">
             <Filter className="w-5 h-5 text-gray-400" />
             <select
@@ -117,6 +130,22 @@ export default function EducationModules() {
               {categories.map(category => (
                 <option key={category} value={category}>
                   {category === 'all' ? 'All Categories' : category}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Class Filter */}
+          <div className="flex items-center space-x-2">
+            <Filter className="w-5 h-5 text-gray-400" />
+            <select
+              value={selectedClass}
+              onChange={(e) => setSelectedClass(e.target.value)}
+              className="border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              {classLevels.map(level => (
+                <option key={level} value={level}>
+                  Class {level}
                 </option>
               ))}
             </select>
@@ -169,6 +198,13 @@ export default function EducationModules() {
                   {module.difficulty}
                 </span>
                 <span className="text-xs text-gray-500">{module.category}</span>
+              </div>
+
+              {/* Show class level badge */}
+              <div className="mb-3">
+                <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
+                  Class {module.classLevel}
+                </span>
               </div>
 
               <div className="flex items-center justify-between text-sm text-gray-600 mb-4">

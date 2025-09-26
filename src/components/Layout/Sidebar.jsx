@@ -25,6 +25,8 @@ export default function Sidebar({ activeTab, onTabChange, isOpen }) {
     { id: 'drills', label: 'Virtual Drills', icon: Zap, roles: ['student'] },
     { id: 'contacts', label: 'Emergency Contacts', icon: Phone, roles: ['student', 'admin'] },
     { id: 'Quiz', label: 'Gamification', icon: IoGameController, roles: ['student'] },
+    {id: 'faq', label: 'FAQ', icon: MessageSquare, roles: ['student', 'admin']},
+    {id: 'feedback', label: 'Feedback', icon: MessageSquare, roles: ['student', 'admin']},
   ];
 
   const visibleItems = navigationItems.filter(item => 
