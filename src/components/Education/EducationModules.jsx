@@ -3,7 +3,7 @@ import { BookOpen, Clock, Star, Play, CheckCircle, Award, Filter, Search } from 
 
 export default function EducationModules() {
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [selectedClass, setSelectedClass] = useState('1-5'); // ✅ default first class
+  const [selectedClass, setSelectedClass] = useState('Elementary'); // ✅ default first class
   const [searchTerm, setSearchTerm] = useState('');
 
   const modules = [
@@ -19,7 +19,7 @@ export default function EducationModules() {
       rating: 4.8,
       thumbnail: 'https://example.com/earthquake-thumbnail.jpg',
       videoUrl: 'https://www.youtube.com/watch?v=BLEPakj1YTY',
-      classLevel: '6-8'
+      classLevel: 'Middle School'
     },
     {
       id: '2',
@@ -33,7 +33,7 @@ export default function EducationModules() {
       rating: 4.7,
       thumbnail: 'https://example.com/natural-disasters-thumbnail.jpg',
       videoUrl: 'https://www.youtube.com/watch?v=HaEmIakO7f4',
-      classLevel: '1-5'
+      classLevel: 'Elementary'
     },
     {
       id: '3',
@@ -47,7 +47,7 @@ export default function EducationModules() {
       rating: 4.9,
       thumbnail: 'https://example.com/flood-survival-thumbnail.jpg',
       videoUrl: 'https://youtu.be/pi_nUPcQz_A?feature=shared',
-      classLevel: '1-5'
+      classLevel: 'High School'
     },
     {
       id: '4',
@@ -61,13 +61,13 @@ export default function EducationModules() {
       rating: 5.0,
       thumbnail: 'https://example.com/house-fire-survival-thumbnail.jpg',
       videoUrl: 'https://youtu.be/Xgc90CoJbDI?feature=shared',
-      classLevel: '1-5'
+      classLevel: 'Elementary'
     }
   ];
 
   // ✅ Filters
   const categories = ['all', ...Array.from(new Set(modules.map(m => m.category)))];
-  const classLevels = ['1-5', '6-8', '9-12']; // ✅ removed "all"
+  const classLevels = ['Elementary', 'Middle School', 'High School']; // ✅ updated class levels
 
   // ✅ Filtering logic
   const filteredModules = modules.filter(module => {
