@@ -12,10 +12,10 @@ import {
 
 export default function AdminDashboard() {
   const schoolStats = {
-    totalStudents: 1247,
+    totalStudents: 1240,
     totalTeachers: 45,
     activeAlerts: 2,
-    completedDrills: 1205,
+    completedDrills: 50,
     averageScore: 87.5,
     preparednessLevel: 'High'
   };
@@ -52,7 +52,7 @@ export default function AdminDashboard() {
               <Users className="w-6 h-6 text-blue-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Total Users</p>
+              <p className="text-sm font-medium text-gray-600">Total Students</p>
               <p className="text-2xl font-bold text-gray-900">{schoolStats.totalStudents + schoolStats.totalTeachers}</p>
             </div>
           </div>

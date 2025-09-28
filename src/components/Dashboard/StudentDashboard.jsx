@@ -71,7 +71,7 @@ export default function StudentDashboard() {
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow cursor-pointer">
+        {/* <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow cursor-pointer">
           <div className="flex items-center space-x-3">
             <div className="bg-yellow-100 p-2 rounded-lg">
               <Trophy className="w-5 h-5 text-yellow-600" />
@@ -81,7 +81,7 @@ export default function StudentDashboard() {
               <p className="text-sm text-gray-500">2 badges pending</p>
             </div>
           </div>
-        </div>
+        </div> */}
 
         <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow cursor-pointer">
           <div className="flex items-center space-x-3">
@@ -153,6 +153,7 @@ export default function StudentDashboard() {
             </div>
           </div>
         </div>
+        
       </div>
 
       {/* Upcoming Drills */}
@@ -164,7 +165,7 @@ export default function StudentDashboard() {
               <div key={drill.id} className="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-colors">
                 <h3 className="font-medium text-gray-900 mb-1">{drill.title}</h3>
                 <p className="text-sm text-gray-600 mb-2">{drill.type}</p>
-                <p className="text-sm text-blue-600 font-medium">{drill.date}</p>
+                {/* <p className="text-sm text-blue-600 font-medium">{drill.date}</p> */}
               </div>
             ))}
           </div>

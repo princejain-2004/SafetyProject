@@ -1,6 +1,9 @@
 import React from 'react';
 import { IoMdNotifications } from "react-icons/io"
 import { IoGameController } from "react-icons/io5";
+import { GoQuestion } from "react-icons/go";
+import { GrWorkshop } from "react-icons/gr";  
+import { RiGuideLine } from "react-icons/ri";
 
 import { 
   Home, 
@@ -14,6 +17,7 @@ import {
   Phone
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { BiQuestionMark } from 'react-icons/bi';
 
 export default function Sidebar({ activeTab, onTabChange, isOpen }) {
   const { user } = useAuth();
@@ -25,8 +29,11 @@ export default function Sidebar({ activeTab, onTabChange, isOpen }) {
     { id: 'drills', label: 'Virtual Drills', icon: Zap, roles: ['student'] },
     { id: 'contacts', label: 'Emergency Contacts', icon: Phone, roles: ['student', 'admin'] },
     { id: 'Quiz', label: 'Gamification', icon: IoGameController, roles: ['student'] },
-    {id: 'faq', label: 'FAQ', icon: MessageSquare, roles: ['student', 'admin']},
+    // {id: 'analytics', label: 'Analytics', icon: BarChart3, roles: ['admin']},
+    {id: 'faq', label: 'FAQ', icon: GoQuestion, roles: ['student', 'admin']},
     {id: 'feedback', label: 'Feedback', icon: MessageSquare, roles: ['student', 'admin']},
+    {id: 'workshop', label: 'Workshops', icon: GrWorkshop, roles: ['admin']},
+    {id: 'guidelines', label: 'Guidelines', icon: RiGuideLine, roles: ['admin']},
   ];
 
   const visibleItems = navigationItems.filter(item => 
@@ -65,7 +72,7 @@ export default function Sidebar({ activeTab, onTabChange, isOpen }) {
         </div>
 
         {/* User Stats */}
-        <div className="p-4 border-t border-gray-200">
+        {/* <div className="p-4 border-t border-gray-200">
           <div className="bg-gradient-to-r from-blue-50 to-green-50 rounded-lg p-3">
             <h4 className="text-sm font-medium text-gray-900 mb-2">Your Progress</h4>
             <div className="space-y-1">
@@ -78,8 +85,8 @@ export default function Sidebar({ activeTab, onTabChange, isOpen }) {
                 <span className="font-medium text-green-600">{user?.badges?.length || 0}</span>
               </div>
             </div>
-          </div>
-        </div>
+          </div> */}
+        {/* </div> */}
       </div>
     </aside>
   );
