@@ -18,7 +18,7 @@ import TeacherGuide from './components/Guidelines/Guidelines.jsx';
 // ✅ Import chatbot widget
 import ChatBotWidget from './components/ChatBot/ChatbotWidget.jsx';
 import WorkshopPage from './components/Workshop/workshop.jsx';
-
+import VirtualFloodDrill from './components/Drills/VirtualFloodDrill.jsx';
 function AppContent() {
   const { user, loading } = useAuth();
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -61,7 +61,7 @@ function AppContent() {
       case 'alerts':
         return <EmergencyAlerts />;
       case 'drills':
-        return <VirtualEarthquakeDrill />; 
+        return <VirtualFloodDrill />; 
       case 'contacts':
         return <EmergencyContacts />;
       case 'Quiz':
