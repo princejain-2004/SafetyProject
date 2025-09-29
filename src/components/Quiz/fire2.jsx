@@ -1,54 +1,8 @@
 import React, { useState } from "react";
 
 const quizSets = [
-  // Quiz Set 1: Fire Prevention (existing)
+  // Quiz Set 1: Fire Prevention
   [
-    {
-      question: "To prevent a fire, where should you NOT leave a lit candle?",
-      options: [
-        {
-          text: "On a sturdy, flat surface away from drafts.",
-          isCorrect: false,
-          feedback:
-            "Incorrect. This is a good practice. Candles should be on a stable surface. Try again.",
-        },
-        {
-          text: "Near curtains or other flammable materials.",
-          isCorrect: true,
-          feedback:
-            "Correct! Keep candles and open flames away from anything that can easily catch fire.",
-        },
-        {
-          text: "Inside a glass jar or holder.",
-          isCorrect: false,
-          feedback:
-            "Incorrect. Using a proper holder is a good safety measure. Try again.",
-        },
-      ],
-    },
-    {
-      question:
-        "What is the most important thing to do to an electrical appliance that is not in use?",
-      options: [
-        {
-          text: "Cover it with a cloth to keep it clean.",
-          isCorrect: false,
-          feedback: "Incorrect. This is not a fire safety practice. Try again.",
-        },
-        {
-          text: "Leave it plugged in at all times.",
-          isCorrect: false,
-          feedback: "Incorrect. This can lead to electrical fires. Try again.",
-        },
-        {
-          text: "Unplug it from the wall socket.",
-          isCorrect: true,
-          feedback:
-            "Correct! Unplugging appliances when not in use helps prevent a potential fire from a short circuit.",
-        },
-      ],
-    },
-    // --- New Question 1 ---
     {
       question: "Why should you not throw water on an electrical fire?",
       options: [
@@ -70,7 +24,6 @@ const quizSets = [
         },
       ],
     },
-    // --- New Question 2 ---
     {
       question: "What should you do before opening a door during a fire?",
       options: [
@@ -94,58 +47,7 @@ const quizSets = [
     },
   ],
 
-  // Quiz Set 2, 3, 4 (existing sets)...
-  [
-    {
-      question:
-        "If your clothes catch fire, what is the correct action to take?",
-      options: [
-        {
-          text: "Run to find water to put it out.",
-          isCorrect: false,
-          feedback:
-            "Incorrect. Running will fan the flames and make the fire worse. Try again.",
-        },
-        {
-          text: "Yell for help as loudly as possible.",
-          isCorrect: false,
-          feedback:
-            "Incorrect. While you should call for help, your first priority is to put out the fire. Try again.",
-        },
-        {
-          text: "Stop, Drop, and Roll.",
-          isCorrect: true,
-          feedback:
-            "Correct! This action helps to suffocate the fire and is the best way to put out flames on your clothes.",
-        },
-      ],
-    },
-    {
-      question: "When exiting a smoky room, how should you move?",
-      options: [
-        {
-          text: "Standing up straight to see over the smoke.",
-          isCorrect: false,
-          feedback:
-            "Incorrect. Smoke rises. You should stay low to the ground to breathe cleaner air. Try again.",
-        },
-        {
-          text: "Crawling on your hands and knees.",
-          isCorrect: true,
-          feedback:
-            "Correct! By crawling, you stay below the thick, toxic smoke and are more likely to find your way to safety.",
-        },
-        {
-          text: "Walking backward to avoid inhaling smoke.",
-          isCorrect: false,
-          feedback:
-            "Incorrect. This can lead to you getting lost or running into an obstacle. Try again.",
-        },
-      ],
-    },
-  ],
-
-  // Keep Quiz Set 3 and 4 unchanged
+  // Existing sets for "During Fire", "Fire Extinguisher", "Fire Plan" can follow here
 ];
 
 

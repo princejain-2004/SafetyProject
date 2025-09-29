@@ -49,8 +49,51 @@ const quizSets = [
         },
       ],
     },
+    // ✅ New Question 1
+    {
+      question: "Which buildings are safer during earthquakes?",
+      options: [
+        {
+          text: "Non-engineered tall buildings",
+          isCorrect: false,
+          feedback: "Incorrect. Tall non-engineered buildings are dangerous during earthquakes.",
+        },
+        {
+          text: "Earthquake-resistant structures",
+          isCorrect: true,
+          feedback: "Correct! Earthquake-resistant buildings are designed to withstand shocks.",
+        },
+        {
+          text: "Old monuments",
+          isCorrect: false,
+          feedback: "Incorrect. Old monuments are usually unsafe during earthquakes.",
+        },
+      ],
+    },
+    // ✅ New Question 2
+    {
+      question: "Where should you go after evacuating a building during an earthquake?",
+      options: [
+        {
+          text: "Open ground",
+          isCorrect: true,
+          feedback: "Correct! Open grounds are safe from falling debris.",
+        },
+        {
+          text: "Basement",
+          isCorrect: false,
+          feedback: "Incorrect. Basements can be dangerous if the building collapses.",
+        },
+        {
+          text: "Near electric poles",
+          isCorrect: false,
+          feedback: "Incorrect. Electric poles may fall during strong tremors.",
+        },
+      ],
+    },
   ],
 ];
+
 
 export default function EarthquakeQuiz() {
   const [started, setStarted] = useState(false);
