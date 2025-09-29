@@ -1,20 +1,22 @@
 import React, { useState } from 'react';
 import { User, Menu, X, LogOut } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
 
-export default function Header({ onMenuToggle, isMobileMenuOpen }) {
+export default function Header({ onMenuToggle, isMobileMenuOpen, setActiveTab }) {
   const { user, logout } = useAuth();
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const navigate = useNavigate();
 
-  const alertCount = 2; // mock alert count
+  const handleProfileClick = () => {
+    // Use activeTab to navigate inside renderContent
+    setActiveTab(user?.role === 'admin' ? 'admin-profile' : 'profile');
+    setShowUserMenu(false);
+  };
 
   return (
     <header className="bg-white shadow-sm border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo and Title */}
+          {/* Logo and menu */}
           <div className="flex items-center space-x-4">
             <button
               onClick={onMenuToggle}
@@ -22,7 +24,6 @@ export default function Header({ onMenuToggle, isMobileMenuOpen }) {
             >
               {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
-
             <div className="flex items-center space-x-3">
               <img
                 src="src/Assets/Logo.png"
@@ -38,7 +39,7 @@ export default function Header({ onMenuToggle, isMobileMenuOpen }) {
             </div>
           </div>
 
-          {/* Right side - Alerts and User Menu */}
+          {/* User Menu */}
           <div className="flex items-center space-x-4">
             <div className="relative">
               <button className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors">
@@ -46,7 +47,6 @@ export default function Header({ onMenuToggle, isMobileMenuOpen }) {
               </button>
             </div>
 
-            {/* User Menu */}
             <div className="relative">
               <button
                 onClick={() => setShowUserMenu(!showUserMenu)}
@@ -68,18 +68,13 @@ export default function Header({ onMenuToggle, isMobileMenuOpen }) {
                     <p className="text-xs text-gray-500">{user?.email}</p>
                   </div>
 
-                  {/* Edit Profile button */}
                   <button
-                    onClick={() => {
-                      navigate('/profile');
-                      setShowUserMenu(false);
-                    }}
+                    onClick={handleProfileClick}
                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
                     My Profile
                   </button>
 
-                  {/* Sign Out button */}
                   <button
                     onClick={logout}
                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
