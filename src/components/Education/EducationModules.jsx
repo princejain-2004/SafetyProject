@@ -1124,18 +1124,17 @@ export default function EducationModules() {
 
   // Filters
   const categories = ['all', ...Array.from(new Set(modules.map(m => m.category)))];
-  const classLevels = ['Primary', 'Elementary', 'Secondary', 'College'];
-  const languages = ['all', ...Array.from(new Set(modules.map(m => m.language)))]; // ✅ New array for languages
+  const classLevels = ['all', 'Primary', 'Elementary', 'Secondary', 'College'];
+  const languages = ['all', ...Array.from(new Set(modules.map(m => m.language)))];
 
   // Filtering logic
-  const filteredModules = modules.filter(module => {
+  const filteredModules = modules.filter((module) => {
     const matchesCategory = selectedCategory === 'all' || module.category === selectedCategory;
-    const matchesClass = module.classLevel === selectedClass;
-    const matchesLanguage = selectedLanguage === 'all' || module.language === selectedLanguage; // ✅ New language filter logic
-    const matchesSearch =
-      module.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      module.description.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesCategory && matchesClass && matchesLanguage && matchesSearch; // ✅ Include language in filter
+    const matchesClass = selectedClass === 'all' || module.classLevel === selectedClass;
+    const matchesLanguage = selectedLanguage === 'all' || module.language === selectedLanguage;
+    const matchesSearch = module.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          module.description.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesCategory && matchesClass && matchesLanguage && matchesSearch;
   });
 
   const getDifficultyColor = (difficulty) => {
@@ -1162,156 +1161,90 @@ export default function EducationModules() {
       </div>
 
       {/* Filters and Search */}
-      <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-        <div className="flex flex-col sm:flex-row gap-4">
-          {/* Search */}
-          <div className="flex-1">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="Search modules..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-          </div>
-
+      <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 gap-2">
           {/* Category Filter */}
-          <div className="flex items-center space-x-2">
-            <Filter className="w-5 h-5 text-gray-400" />
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              {categories.map(category => (
-                <option key={category} value={category}>
-                  {category === 'all' ? 'All Categories' : category}
-                </option>
-              ))}
-            </select>
-          </div>
+          <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className="border-gray-300 rounded-lg p-2"
+          >
+            {categories.map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
+            ))}
+          </select>
 
-          {/* Class Filter */}
-          <div className="flex items-center space-x-2">
-            <Filter className="w-5 h-5 text-gray-400" />
-            <select
-              value={selectedClass}
-              onChange={(e) => setSelectedClass(e.target.value)}
-              className="border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              {classLevels.map(level => (
-                <option key={level} value={level}>
-                  {level}
-                </option>
-              ))}
-            </select>
-          </div>
+          {/* Class Level Filter */}
+          <select
+            value={selectedClass}
+            onChange={(e) => setSelectedClass(e.target.value)}
+            className="border-gray-300 rounded-lg p-2"
+          >
+            {classLevels.map((level) => (
+              <option key={level} value={level}>
+                {level === 'all' ? 'All Classes' : level}
+              </option>
+            ))}
+          </select>
 
-          {/* Language Filter */} {/* ✅ New Language Filter Section */}
-          <div className="flex items-center space-x-2">
-            <Filter className="w-5 h-5 text-gray-400" />
-            <select
-              value={selectedLanguage}
-              onChange={(e) => setSelectedLanguage(e.target.value)}
-              className="border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              {languages.map(lang => (
-                <option key={lang} value={lang}>
-                  {lang === 'all' ? 'All Languages' : lang}
-                </option>
-              ))}
-            </select>
+          {/* Language Filter */}
+          <select
+            value={selectedLanguage}
+            onChange={(e) => setSelectedLanguage(e.target.value)}
+            className="border-gray-300 rounded-lg p-2"
+          >
+            {languages.map((lang) => (
+              <option key={lang} value={lang}>
+                {lang === 'all' ? 'All Languages' : lang}
+              </option>
+            ))}
+          </select>
+
+          {/* Search */}
+          <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+            <Search className="w-5 h-5 text-gray-400 ml-2" />
+            <input
+              type="text"
+              placeholder="Search modules..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="p-2 outline-none w-full"
+            />
           </div>
         </div>
       </div>
 
       {/* Modules Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredModules.map((module) => (
-          <div
-            key={module.id}
-            className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow"
-          >
-            {/* Thumbnail */}
-            <div className="relative">
-              <img
-                src={module.thumbnail}
-                alt={module.title}
-                className="w-full h-40 object-cover"
-              />
-              <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-                <a href={module.videoUrl} target="_blank" rel="noopener noreferrer">
-                  <button className="bg-white bg-opacity-90 p-3 rounded-full hover:bg-opacity-100 transition-all">
-                    <Play className="w-6 h-6 text-blue-600" />
-                  </button>
-                </a>
-              </div>
-              {module.completed && (
-                <div className="absolute top-3 right-3 bg-green-500 p-1 rounded-full">
-                  <CheckCircle className="w-4 h-4 text-white" />
-                </div>
-              )}
-            </div>
-
-            {/* Content */}
-            <div className="p-4">
-              <div className="flex items-start justify-between mb-2">
-                <h3 className="font-semibold text-gray-900 line-clamp-2">{module.title}</h3>
-                <div className="flex items-center ml-2">
-                  <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                  <span className="text-sm text-gray-600 ml-1">{module.rating}</span>
-                </div>
-              </div>
-
-              <p className="text-sm text-gray-600 mb-3 line-clamp-2">{module.description}</p>
-
-              <div className="flex items-center justify-between mb-3">
-                <span className={`px-2 py-1 rounded-full text-xs font-medium capitalize ${getDifficultyColor(module.difficulty)}`}>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredModules.length > 0 ? (
+          filteredModules.map((module) => (
+            <div key={module.id} className="bg-white p-4 rounded-lg shadow hover:shadow-lg transition">
+              <img src={module.thumbnail} alt={module.title} className="w-full h-40 object-cover rounded-lg mb-4" />
+              <h2 className="text-lg font-semibold text-gray-900">{module.title}</h2>
+              <p className="text-gray-600 text-sm mt-1">{module.description}</p>
+              <div className="flex justify-between items-center mt-3">
+                <span className={`px-2 py-1 text-xs font-medium rounded ${getDifficultyColor(module.difficulty)}`}>
                   {module.difficulty}
                 </span>
-                <span className="text-xs text-gray-500">{module.category}</span>
+                <span className="text-gray-500 text-sm">{module.duration} min</span>
               </div>
-
-              {/* Show class level badge */}
-              <div className="mb-3">
-                <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
-                  Class {module.classLevel}
-                </span>
-                {/* ✅ Show language badge */}
-                <span className="ml-2 px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700">
-                  {module.language}
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between text-sm text-gray-600 mb-4">
-                <div className="flex items-center">
-                  <Clock className="w-4 h-4 mr-1" />
-                  <span>{module.duration} min</span>
-                </div>
-                <div className="flex items-center">
-                  <Award className="w-4 h-4 mr-1 text-yellow-500" />
-                  <span className="font-medium text-yellow-600">{module.points} pts</span>
-                </div>
-              </div>
-
               <a
                 href={module.videoUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`w-full block text-center py-2 px-4 rounded-md font-medium transition-colors ${
-                  module.completed
-                    ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                    : 'bg-blue-600 text-white hover:bg-blue-700'
-                }`}
+                className="mt-3 inline-block w-full text-center bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition"
               >
-                {module.completed ? 'Review Module' : 'Start Learning'}
+                Watch Video
               </a>
             </div>
+          ))
+        ) : (
+          <div className="col-span-full text-center text-gray-500 py-8">
+            No modules found for the selected filters.
           </div>
-        ))}
+        )}
       </div>
     </div>
   );

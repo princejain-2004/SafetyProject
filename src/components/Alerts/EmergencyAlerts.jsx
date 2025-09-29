@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Search, CloudRain, Sun, Cloud, AlertTriangle, CheckCircle, Clock } from "lucide-react";
 
 export default function NotificationPage() {
-  const [city, setCity] = useState("Delhi");
+  const [city, setCity] = useState("Jaipur");
   const [forecast, setForecast] = useState([]);
   const [today, setToday] = useState(null);
 
