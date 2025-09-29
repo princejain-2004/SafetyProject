@@ -17,7 +17,7 @@ export default function EducationModules() {
       points: 200,
       completed: false,
       rating: 4.8,
-      thumbnail: 'https://example.com/earthquake-thumbnail.jpg',
+      thumbnail: <img src="src\Assets\Earthquake.png" alt="How to Protect Yourself During an Earthquake" />,
       videoUrl: 'https://www.youtube.com/watch?v=BLEPakj1YTY',
       classLevel: 'Middle School'
     },
@@ -31,7 +31,7 @@ export default function EducationModules() {
       points: 180,
       completed: false,
       rating: 4.7,
-      thumbnail: 'https://example.com/natural-disasters-thumbnail.jpg',
+      thumbnail: <img src="src\Assets\NaturalDisaster.jpg" alt="Natural Disasters Compilation" />,
       videoUrl: 'https://www.youtube.com/watch?v=HaEmIakO7f4',
       classLevel: 'Elementary'
     },
@@ -45,7 +45,7 @@ export default function EducationModules() {
       points: 220,
       completed: false,
       rating: 4.9,
-      thumbnail: 'https://example.com/flood-survival-thumbnail.jpg',
+      thumbnail: <img src="src\Assets\Flood.jpg" alt="How To Survive Floods?" />,
       videoUrl: 'https://youtu.be/pi_nUPcQz_A?feature=shared',
       classLevel: 'High School'
     },
@@ -59,7 +59,7 @@ export default function EducationModules() {
       points: 250,
       completed: false,
       rating: 5.0,
-      thumbnail: 'https://example.com/house-fire-survival-thumbnail.jpg',
+      thumbnail: <img src="src\Assets\Fire.jpg" alt="How To Survive A House Fire?" />,
       videoUrl: 'https://youtu.be/Xgc90CoJbDI?feature=shared',
       classLevel: 'Elementary'
     }
