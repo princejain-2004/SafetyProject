@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Award, Search, Filter } from 'lucide-react';
-import EarthquakeQuiz from './earthquake';
-import FireQuiz from './fire';
-import FloodQuiz from './flood';
+import EarthquakeQuiz from './EarthQuake';
+import FireQuiz from './Fire';
+import FloodQuiz from './Flood';
 import EarthQuakeQuizHindi from './EarthQuakeHindi';
 import FloodQuizHindi from './FloodHindi';
 import FireQuizHindi from './FireHindi';

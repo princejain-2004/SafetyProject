@@ -17,6 +17,7 @@ import Feedback from './components/FeedbackAndFaq/Feedback';
 // ✅ Import chatbot widget
 import ChatBotWidget from './components/ChatBot/ChatbotWidget.jsx';
 import WorkshopPage from './components/Workshop/workshop.jsx';
+import TeacherGuide from './components/Guidelines/Guidelines.jsx';
 
 function AppContent() {
   const { user, loading } = useAuth();
@@ -71,6 +72,8 @@ function AppContent() {
         return <Feedback />;
       case 'workshop':
         return <WorkshopPage />;
+      case 'guidelines':
+        return <TeacherGuide />;
       default:
         return <StudentDashboard />;
     }

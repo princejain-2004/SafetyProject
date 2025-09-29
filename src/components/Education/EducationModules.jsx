@@ -67,7 +67,7 @@ export default function EducationModules() {
 
   // ✅ Filters
   const categories = ['all', ...Array.from(new Set(modules.map(m => m.category)))];
-  const classLevels = ['Elementary', 'Middle School', 'High School']; // ✅ updated class levels
+  const classLevels = ['Elementary', 'Middle School', 'High School', 'College']; // ✅ updated class levels
 
   // ✅ Filtering logic
   const filteredModules = modules.filter(module => {
@@ -145,7 +145,7 @@ export default function EducationModules() {
             >
               {classLevels.map(level => (
                 <option key={level} value={level}>
-                  Class {level}
+                  {level}
                 </option>
               ))}
             </select>
