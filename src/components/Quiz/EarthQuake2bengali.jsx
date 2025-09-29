@@ -1,101 +1,26 @@
 import React, { useState } from "react";
-
-const quizSets = [
+const quizSets_bn = [
   [
     {
-      question:
-        "What is the most important item to secure in your home to prevent injury during an earthquake?",
+      question: "ভূমিকম্পের সময় কোন ভবনগুলি নিরাপদ?",
       options: [
-        {
-          text: "Small, lightweight objects.",
-          isCorrect: false,
-          feedback:
-            "Incorrect. While you should secure everything, large, heavy items pose the greatest risk. Try again.",
-        },
-        {
-          text: "Heavy furniture like bookcases and cabinets.",
-          isCorrect: true,
-          feedback:
-            "Correct! Securing heavy furniture prevents it from toppling over and causing serious injury.",
-        },
-        {
-          text: "Picture frames on the wall.",
-          isCorrect: false,
-          feedback:
-            "Incorrect. Picture frames are a low-priority risk. Focus on heavy furniture. Try again.",
-        },
+        { text: "ইঞ্জিনিয়ারিং ছাড়া উঁচু ভবন", isCorrect: false, feedback: "ভুল। এই ধরণের ভবন ঝুঁকিপূর্ণ।" },
+        { text: "ভূমিকম্প-প্রতিরোধী কাঠামো", isCorrect: true, feedback: "সঠিক! এগুলি কম্পন সহ্য করার জন্য ডিজাইন করা হয়।" },
+        { text: "পুরনো স্মৃতিস্তম্ভ", isCorrect: false, feedback: "ভুল। পুরনো স্মৃতিস্তম্ভ নিরাপদ নয়।" },
       ],
     },
     {
-      question: "What should you prepare in advance for an earthquake emergency?",
+      question: "ভূমিকম্পের সময় ভবন থেকে বের হওয়ার পর কোথায় যেতে হবে?",
       options: [
-        {
-          text: "An emergency kit with non-perishable food, water, and a flashlight.",
-          isCorrect: true,
-          feedback:
-            "Correct! An emergency kit is crucial for survival until help arrives.",
-        },
-        {
-          text: "A detailed map of all the shopping malls in your city.",
-          isCorrect: false,
-          feedback:
-            "Incorrect. A map of safety zones and evacuation routes is more important. Try again.",
-        },
-        {
-          text: "New clothes and shoes for your family.",
-          isCorrect: false,
-          feedback:
-            "Incorrect. While you need clothes, your main focus should be on survival supplies. Try again.",
-        },
-      ],
-    },
-    // ✅ New Question 1
-    {
-      question: "Which buildings are safer during earthquakes?",
-      options: [
-        {
-          text: "Non-engineered tall buildings",
-          isCorrect: false,
-          feedback: "Incorrect. Tall non-engineered buildings are dangerous during earthquakes.",
-        },
-        {
-          text: "Earthquake-resistant structures",
-          isCorrect: true,
-          feedback: "Correct! Earthquake-resistant buildings are designed to withstand shocks.",
-        },
-        {
-          text: "Old monuments",
-          isCorrect: false,
-          feedback: "Incorrect. Old monuments are usually unsafe during earthquakes.",
-        },
-      ],
-    },
-    // ✅ New Question 2
-    {
-      question: "Where should you go after evacuating a building during an earthquake?",
-      options: [
-        {
-          text: "Open ground",
-          isCorrect: true,
-          feedback: "Correct! Open grounds are safe from falling debris.",
-        },
-        {
-          text: "Basement",
-          isCorrect: false,
-          feedback: "Incorrect. Basements can be dangerous if the building collapses.",
-        },
-        {
-          text: "Near electric poles",
-          isCorrect: false,
-          feedback: "Incorrect. Electric poles may fall during strong tremors.",
-        },
+        { text: "খোলা মাঠে", isCorrect: true, feedback: "সঠিক! খোলা মাঠে কোনো জিনিস পড়ার ঝুঁকি নেই।" },
+        { text: "বেসমেন্টে", isCorrect: false, feedback: "ভুল। ভবন ভেঙে পড়লে বেসমেন্ট বিপজ্জনক হয়।" },
+        { text: "বিদ্যুতের খুঁটির কাছে", isCorrect: false, feedback: "ভুল। বিদ্যুতের খুঁটি পড়ে যেতে পারে।" },
       ],
     },
   ],
 ];
 
-
-export default function EarthquakeQuiz() {
+export default function EarthquakeQuizHindi() {
   const [started, setStarted] = useState(false);
   const [currentSetIndex, setCurrentSetIndex] = useState(0);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -144,10 +69,10 @@ export default function EarthquakeQuiz() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-900 text-gray-200 font-inter">
       {!started ? (
-        // === Start Card on Main Page ===
+        // === प्रारंभिक कार्ड ===
         <div className="bg-gray-800 rounded-2xl shadow-xl p-6 border-4 border-gray-500 w-full max-w-md text-center">
           <h1 className="text-2xl font-bold text-gray-400 mb-4">
-            Earthquake Preparedness Quiz
+            भूकंप तैयारी प्रश्नोत्तरी
           </h1>
           <img
             src="https://placehold.co/400x200/4a5568/ffffff?text=EARTHQUAKE+QUIZ"
@@ -155,22 +80,24 @@ export default function EarthquakeQuiz() {
             className="mx-auto rounded-lg mb-4"
           />
           <p className="text-lg mb-4">
-            Test your knowledge and learn how to stay safe during an earthquake!
+            अपना ज्ञान जाँचें और जानें कि भूकंप के दौरान सुरक्षित कैसे रहें!
           </p>
           <button
             onClick={() => setStarted(true)}
             className="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg"
           >
-            Start Quiz
+            प्रश्नोत्तरी शुरू करें
           </button>
         </div>
       ) : (
-        // === Full Screen Quiz ===
+        // === पूर्ण प्रश्नोत्तरी ===
         <div className="w-full min-h-screen flex items-center justify-center bg-gray-900 p-4">
           {!finished ? (
             <div className="flex flex-col gap-4 w-full max-w-2xl">
               <div className="bg-gray-800 rounded-xl p-6 shadow-xl">
-                <h2 className="text-xl font-bold mb-4">{currentQuestion.question}</h2>
+                <h2 className="text-xl font-bold mb-4">
+                  {currentQuestion.question}
+                </h2>
                 <div className="flex flex-col gap-3">
                   {currentQuestion.options.map((option, idx) => (
                     <button
@@ -192,7 +119,11 @@ export default function EarthquakeQuiz() {
                 </div>
               </div>
 
-              {feedback && <div className="text-center text-lg font-bold animate-bounce">{feedback}</div>}
+              {feedback && (
+                <div className="text-center text-lg font-bold animate-bounce">
+                  {feedback}
+                </div>
+              )}
 
               {selectedOption !== null && (
                 <button
@@ -201,23 +132,25 @@ export default function EarthquakeQuiz() {
                 >
                   {currentQuestion.options[selectedOption].isCorrect
                     ? currentQuestionIndex < currentSet.length - 1
-                      ? "Next Question"
+                      ? "अगला प्रश्न"
                       : currentSetIndex < quizSets.length - 1
-                      ? "Continue to Next Set"
-                      : "Finish Quiz"
-                    : "Try Again"}
+                      ? "अगले सेट पर जाएँ"
+                      : "प्रश्नोत्तरी समाप्त करें"
+                    : "फिर से प्रयास करें"}
                 </button>
               )}
             </div>
           ) : (
             <div className="text-center">
-              <h2 className="text-3xl font-bold text-green-400 mb-4">Quiz Complete!</h2>
-              <p className="text-lg mb-6">You scored {score} points!</p>
+              <h2 className="text-3xl font-bold text-green-400 mb-4">
+                प्रश्नोत्तरी समाप्त!
+              </h2>
+              <p className="text-lg mb-6">आपने {score} अंक प्राप्त किए!</p>
               <button
                 onClick={restartQuiz}
                 className="bg-gray-600 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:bg-gray-700"
               >
-                Restart Quiz
+                पुनः शुरू करें
               </button>
             </div>
           )}
