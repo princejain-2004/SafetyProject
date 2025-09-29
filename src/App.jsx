@@ -18,6 +18,12 @@ import TeacherGuide from './components/Guidelines/Guidelines.jsx';
 // ✅ Import chatbot widget
 import ChatBotWidget from './components/ChatBot/ChatbotWidget.jsx';
 import WorkshopPage from './components/Workshop/workshop.jsx';
+<<<<<<< HEAD
+import { FloodBadge } from './components/badges/flood.jsx';
+import FloodQuiz from './components/Quiz/flood.jsx';
+import VirtualFloodDrill from './components/Drills/flood.jsx';
+=======
+>>>>>>> 8dc5867cdc13867dffb9dc246ff5d6fa9fd21b54
 
 function AppContent() {
   const { user, loading } = useAuth();
@@ -61,7 +67,7 @@ function AppContent() {
       case 'alerts':
         return <EmergencyAlerts />;
       case 'drills':
-        return <FloodQuiz />; 
+        return <VirtualFloodDrill />; 
       case 'contacts':
         return <EmergencyContacts />;
       case 'Quiz':
