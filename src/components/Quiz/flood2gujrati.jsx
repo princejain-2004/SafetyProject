@@ -70,7 +70,7 @@ const floodQuizSets_Gujarati = [
 ];
 
 
-export default function FloodQuiz() {
+export default function FloodQuiz2gujrati() {
   const [started, setStarted] = useState(false);
   const [finished, setFinished] = useState(false);
   const [currentSetIndex, setCurrentSetIndex] = useState(0);

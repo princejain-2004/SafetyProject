@@ -83,7 +83,7 @@ const quizSets_gu = [
 ];
 
 
-export default function FloodQuiz() {
+export default function FloodQuizgujrati() {
   const [started, setStarted] = useState(false);
   const [finished, setFinished] = useState(false);
   const [currentSetIndex, setCurrentSetIndex] = useState(0);

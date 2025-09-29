@@ -81,7 +81,7 @@ const quizSets_bn = [
 
 
 
-export default function FloodQuiz() {
+export default function FloodQuizbengali() {
   const [started, setStarted] = useState(false);
   const [finished, setFinished] = useState(false);
   const [currentSetIndex, setCurrentSetIndex] = useState(0);

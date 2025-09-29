@@ -38,7 +38,7 @@ const quizSets_pa = [
 ];
 
 
-export default function EarthQuakeQuizPunjabi() {
+export default function EarthQuakeQuizpunjabi() {
   const [started, setStarted] = useState(false);
   const [currentSetIndex, setCurrentSetIndex] = useState(0);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);

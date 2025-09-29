@@ -39,7 +39,7 @@ const quizSets_gu = [
 
 
 
-export default function EarthquakeQuizHindi() {
+export default function EarthquakeQuiz2gujrati() {
   const [started, setStarted] = useState(false);
   const [currentSetIndex, setCurrentSetIndex] = useState(0);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);

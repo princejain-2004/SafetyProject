@@ -87,7 +87,7 @@ const quizSets_te = [
 
 
 
-export default function FireQuiz() {
+export default function FireQuiztelugu() {
   const [started, setStarted] = useState(false);
   const [currentSetIndex, setCurrentSetIndex] = useState(0);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);

@@ -70,7 +70,7 @@ const floodQuizSets_Punjabi = [
 ];
 
 
-export default function FloodQuiz() {
+export default function FloodQuiz2punjabi() {
   const [started, setStarted] = useState(false);
   const [finished, setFinished] = useState(false);
   const [currentSetIndex, setCurrentSetIndex] = useState(0);

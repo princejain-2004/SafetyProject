@@ -201,7 +201,7 @@ const quizSets = [
   ],
 ];
 
-export default function FireQuizPunjabi() {
+export default function FireQuizpunjabi() {
   const [started, setStarted] = useState(false);
   const [currentSetIndex, setCurrentSetIndex] = useState(0);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);

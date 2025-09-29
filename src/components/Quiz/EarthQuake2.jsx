@@ -37,7 +37,7 @@ const quizSets_en = [
   ],
 ];
 
-export default function EarthquakeQuiz() {
+export default function EarthquakeQuiz2() {
   const [started, setStarted] = useState(false);
   const [currentSetIndex, setCurrentSetIndex] = useState(0);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);

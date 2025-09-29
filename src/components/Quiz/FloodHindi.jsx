@@ -198,7 +198,7 @@ const quizSets = [
   ],
 ];
 
-export default function FloodQuizHindi() {
+export default function FloodQuizhindi() {
   const [started, setStarted] = useState(false);
   const [finished, setFinished] = useState(false);
   const [currentSetIndex, setCurrentSetIndex] = useState(0);

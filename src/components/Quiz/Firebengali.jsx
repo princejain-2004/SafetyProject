@@ -39,7 +39,7 @@ const quizSets_bn = [
 
 
 
-export default function FireQuiz() {
+export default function FireQuizbengali() {
   const [started, setStarted] = useState(false);
   const [currentSetIndex, setCurrentSetIndex] = useState(0);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
