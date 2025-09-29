@@ -17,6 +17,7 @@ import Feedback from './components/FeedbackAndFaq/Feedback';
 // ✅ Import chatbot widget
 import ChatBotWidget from './components/ChatBot/ChatbotWidget.jsx';
 import WorkshopPage from './components/Workshop/workshop.jsx';
+import { FloodBadge } from './components/badges/flood.jsx';
 
 function AppContent() {
   const { user, loading } = useAuth();
@@ -60,7 +61,7 @@ function AppContent() {
       case 'alerts':
         return <EmergencyAlerts />;
       case 'drills':
-        return <VirtualEarthquakeDrill />; 
+        return <FloodBadge />; 
       case 'contacts':
         return <EmergencyContacts />;
       case 'Quiz':
