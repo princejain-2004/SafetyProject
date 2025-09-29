@@ -19,6 +19,7 @@ import ChatBotWidget from './components/ChatBot/ChatbotWidget.jsx';
 import WorkshopPage from './components/Workshop/workshop.jsx';
 import { FloodBadge } from './components/badges/flood.jsx';
 import FloodQuiz from './components/Quiz/flood.jsx';
+import VirtualFloodDrill from './components/Drills/flood.jsx';
 
 function AppContent() {
   const { user, loading } = useAuth();
@@ -62,7 +63,7 @@ function AppContent() {
       case 'alerts':
         return <EmergencyAlerts />;
       case 'drills':
-        return <FloodQuiz />; 
+        return <VirtualFloodDrill />; 
       case 'contacts':
         return <EmergencyContacts />;
       case 'Quiz':
