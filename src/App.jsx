@@ -18,7 +18,6 @@ import TeacherGuide from './components/Guidelines/Guidelines.jsx';
 // ✅ Import chatbot widget
 import ChatBotWidget from './components/ChatBot/ChatbotWidget.jsx';
 import WorkshopPage from './components/Workshop/workshop.jsx';
-import VirtualFloodDrill from './components/Drills/VirtualFloodDrill.jsx';
 import VirtualFireDrill from './components/Drills/VirtualFireDrill.jsx';
 
 function AppContent() {
@@ -73,12 +72,12 @@ function AppContent() {
         >
           🌍 Earthquake Drill
         </button>
-        <button
+        {/* <button
           onClick={() => setActiveTab('flood-drill')}
           className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700"
         >
           🌊 Flood Drill
-        </button>
+        </button> */}
         <button
           onClick={() => setActiveTab('fire-drill')}
           className="px-6 py-3 bg-orange-600 text-white rounded-lg shadow-md hover:bg-orange-700"

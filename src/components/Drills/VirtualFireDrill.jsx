@@ -1,211 +1,230 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 
 export default function VirtualFireDrill() {
   const containerRef = useRef(null);
+  const [drillState, setDrillState] = useState("ready"); // ready, active, success, fail
+  const [messageContent, setMessageContent] = useState({ title: "", text: "", button: "" });
+  const keys = useRef({ w: false, a: false, s: false, d: false });
+  const mouse = useRef({ dragging: false, prevX: 0, prevY: 0 });
 
   useEffect(() => {
-    let scene, camera, renderer, clock;
-    let ground, building, exitZone, debrisGroup, flames, smokeGroup;
-    let fireStart = 0;
-    let isDrillActive = false;
+    let scene, camera, renderer, platform, fireGroup, smokeGroup;
 
-    // DOM refs
-    const infoPanel = document.getElementById("fire-info-panel");
-    const startButton = document.getElementById("fire-start-button");
-    const messageBox = document.getElementById("fire-message-box");
-    const messageTitle = document.getElementById("fire-message-title");
-    const messageText = document.getElementById("fire-message-text");
-    const continueButton = document.getElementById("fire-continue-button");
+    const MOVE_SPEED = 0.1;
+    const FIRE_RADIUS = 0.7; // collision with fire
+
+    function createFireAndSmoke() {
+      fireGroup = new THREE.Group();
+      smokeGroup = new THREE.Group();
+      for (let i = 0; i < 5; i++) {
+        const fire = new THREE.Mesh(
+          new THREE.ConeGeometry(0.3, 1, 8),
+          new THREE.MeshBasicMaterial({ color: 0xff4500 })
+        );
+        fire.position.set(Math.random() * 8 - 4, 0.5, Math.random() * 8 - 4);
+        fireGroup.add(fire);
+
+        const smoke = new THREE.Mesh(
+          new THREE.SphereGeometry(0.3, 8, 8),
+          new THREE.MeshBasicMaterial({ color: 0x555555, transparent: true, opacity: 0.6 })
+        );
+        smoke.position.set(fire.position.x, 1, fire.position.z);
+        smokeGroup.add(smoke);
+      }
+      scene.add(fireGroup);
+      scene.add(smokeGroup);
+    }
 
     function init() {
       scene = new THREE.Scene();
-      scene.background = new THREE.Color(0x111111);
+      scene.background = new THREE.Color(0x1a1a1a);
 
-      camera = new THREE.PerspectiveCamera(
-        75,
-        window.innerWidth * 0.6 / window.innerHeight,
-        0.1,
-        1000
-      );
+      camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
       camera.position.set(0, 1.6, 6);
 
       renderer = new THREE.WebGLRenderer({ antialias: true });
-      renderer.setSize(window.innerWidth * 0.6, window.innerHeight);
+      renderer.setSize(window.innerWidth, window.innerHeight);
       containerRef.current.appendChild(renderer.domElement);
 
-      clock = new THREE.Clock();
+      scene.add(new THREE.AmbientLight(0x555555));
+      const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+      dirLight.position.set(5, 10, 5);
+      scene.add(dirLight);
 
-      // lights
-      scene.add(new THREE.AmbientLight(0x333333));
-      const fireLight = new THREE.PointLight(0xff4500, 2, 15);
-      fireLight.position.set(0, 2, -3);
-      scene.add(fireLight);
-
-      // ground
-      const groundGeo = new THREE.PlaneGeometry(50, 50);
-      ground = new THREE.Mesh(
-        groundGeo,
-        new THREE.MeshLambertMaterial({ color: 0x2e2e2e })
+      const ground = new THREE.Mesh(
+        new THREE.PlaneGeometry(20, 20),
+        new THREE.MeshLambertMaterial({ color: 0x2e3b4e })
       );
       ground.rotation.x = -Math.PI / 2;
       scene.add(ground);
 
-      // burning building
-      building = new THREE.Mesh(
-        new THREE.BoxGeometry(3, 4, 3),
-        new THREE.MeshLambertMaterial({ color: 0x4a2e2e })
+      // House (just decoration)
+      const house = new THREE.Mesh(
+        new THREE.BoxGeometry(3, 2, 3),
+        new THREE.MeshLambertMaterial({ color: 0x9b6b4a })
       );
-      building.position.set(0, 2, -6);
-      scene.add(building);
+      house.position.set(0, 1, -5);
+      scene.add(house);
 
-      // exit zone
-      exitZone = new THREE.Mesh(
-        new THREE.PlaneGeometry(3, 3),
-        new THREE.MeshBasicMaterial({ color: 0x00ff00, transparent: true, opacity: 0.6 })
+      // Safe platform
+      platform = new THREE.Mesh(
+        new THREE.BoxGeometry(2, 0.4, 2),
+        new THREE.MeshPhongMaterial({ color: 0x2dd4bf, transparent: true, opacity: 0.85 })
       );
-      exitZone.rotation.x = -Math.PI / 2;
-      exitZone.position.set(6, 0.01, -2);
-      scene.add(exitZone);
+      platform.position.set(5, 0.2, 3);
+      scene.add(platform);
 
-      // flames (particles)
-      flames = new THREE.Group();
-      for (let i = 0; i < 100; i++) {
-        const flame = new THREE.Mesh(
-          new THREE.SphereGeometry(0.1, 8, 8),
-          new THREE.MeshBasicMaterial({ color: 0xff4500 })
-        );
-        flame.position.set(
-          (Math.random() - 0.5) * 2,
-          Math.random() * 2,
-          -6 + (Math.random() - 0.5) * 2
-        );
-        flames.add(flame);
-      }
-      scene.add(flames);
+      createFireAndSmoke();
 
-      // smoke particles
-      smokeGroup = new THREE.Group();
-      for (let i = 0; i < 50; i++) {
-        const smoke = new THREE.Mesh(
-          new THREE.SphereGeometry(0.15, 8, 8),
-          new THREE.MeshBasicMaterial({ color: 0x555555, transparent: true, opacity: 0.6 })
-        );
-        smoke.position.set(
-          (Math.random() - 0.5) * 2,
-          2 + Math.random() * 1,
-          -6 + (Math.random() - 0.5) * 2
-        );
-        smokeGroup.add(smoke);
-      }
-      scene.add(smokeGroup);
-
-      // debris
-      debrisGroup = new THREE.Group();
-      for (let i = 0; i < 10; i++) {
-        const debris = new THREE.Mesh(
-          new THREE.BoxGeometry(0.4, 0.2, 0.2),
-          new THREE.MeshLambertMaterial({ color: 0xaaaaaa })
-        );
-        debris.position.set(
-          (Math.random() - 0.5) * 4,
-          2 + Math.random() * 2,
-          -6 + (Math.random() - 0.5) * 2
-        );
-        debris.rotation.set(
-          Math.random() * Math.PI,
-          Math.random() * Math.PI,
-          Math.random() * Math.PI
-        );
-        debrisGroup.add(debris);
-      }
-      scene.add(debrisGroup);
-
-      // animation
-      function animate() {
-        requestAnimationFrame(animate);
-
-        // animate flames upward
-        flames.children.forEach((flame) => {
-          flame.position.y += 0.01;
-          if (flame.position.y > 4) flame.position.y = 0.5;
-        });
-
-        // smoke rising
-        smokeGroup.children.forEach((smoke) => {
-          smoke.position.y += 0.005;
-          smoke.material.opacity -= 0.0005;
-          if (smoke.position.y > 5) {
-            smoke.position.y = 2;
-            smoke.material.opacity = 0.6;
-          }
-        });
-
-        // debris falling slowly
-        debrisGroup.children.forEach((d) => {
-          d.position.y -= 0.01;
-          if (d.position.y < 0) d.position.y = 2 + Math.random() * 2;
-        });
-
-        renderer.render(scene, camera);
-      }
-
-      // listeners
-      startButton.addEventListener("click", () => {
-        infoPanel.style.display = "none";
-        fireStart = Date.now();
-        isDrillActive = true;
+      // Mouse drag
+      renderer.domElement.addEventListener("mousedown", (e) => {
+        mouse.current.dragging = true;
+        mouse.current.prevX = e.clientX;
+        mouse.current.prevY = e.clientY;
       });
-      continueButton.addEventListener("click", () => {
-        messageBox.style.display = "none";
+      renderer.domElement.addEventListener("mouseup", () => (mouse.current.dragging = false));
+      renderer.domElement.addEventListener("mousemove", (e) => {
+        if (mouse.current.dragging) {
+          const dx = e.clientX - mouse.current.prevX;
+          const dy = e.clientY - mouse.current.prevY;
+          camera.rotation.y -= dx * 0.005;
+          camera.rotation.x -= dy * 0.005;
+          camera.rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, camera.rotation.x));
+          mouse.current.prevX = e.clientX;
+          mouse.current.prevY = e.clientY;
+        }
       });
+
+      // Keyboard controls
+      const handleKeyDown = (e) => {
+        if (e.key.toLowerCase() in keys.current) keys.current[e.key.toLowerCase()] = true;
+      };
+      const handleKeyUp = (e) => {
+        if (e.key.toLowerCase() in keys.current) keys.current[e.key.toLowerCase()] = false;
+      };
+      window.addEventListener("keydown", handleKeyDown);
+      window.addEventListener("keyup", handleKeyUp);
 
       animate();
     }
 
+    function checkCollision() {
+      const pos = camera.position;
+      // Check safe platform
+      if (
+        pos.x > platform.position.x - 1 &&
+        pos.x < platform.position.x + 1 &&
+        pos.z > platform.position.z - 1 &&
+        pos.z < platform.position.z + 1
+      ) {
+        setDrillState("success");
+        setMessageContent({
+          title: "✅ Safe Zone Reached!",
+          text: "You successfully reached the safe zone! Drill complete.",
+          button: "Restart Drill",
+        });
+        return true;
+      }
+      // Check fire collision
+      for (let fire of fireGroup.children) {
+        if (pos.distanceTo(fire.position) < FIRE_RADIUS) {
+          setDrillState("fail");
+          setMessageContent({
+            title: "❌ You Got Burned!",
+            text: "You moved into the fire! Drill failed.",
+            button: "Restart Drill",
+          });
+          return true;
+        }
+      }
+      return false;
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      if (drillState === "active") {
+        const direction = new THREE.Vector3();
+        if (keys.current.w) direction.z -= 1;
+        if (keys.current.s) direction.z += 1;
+        if (keys.current.a) direction.x -= 1;
+        if (keys.current.d) direction.x += 1;
+
+        direction.normalize();
+        direction.applyQuaternion(camera.quaternion);
+        camera.position.add(direction.multiplyScalar(0.1));
+
+        // Fire flicker
+        fireGroup.children.forEach((f, idx) => {
+          f.scale.y = 0.8 + Math.sin(Date.now() * 0.005 + idx) * 0.4;
+        });
+
+        // Smoke rise
+        smokeGroup.children.forEach((s) => {
+          s.position.y += 0.01;
+          if (s.position.y > 3) s.position.y = 1;
+        });
+
+        checkCollision();
+      }
+
+      renderer.render(scene, camera);
+    }
+
+    window.addEventListener("resize", () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
     init();
 
     return () => {
-      if (renderer && containerRef.current) {
-        containerRef.current.removeChild(renderer.domElement);
-      }
+      if (renderer) containerRef.current.removeChild(renderer.domElement);
     };
-  }, []);
+  }, [drillState]);
+
+  const startDrill = () => setDrillState("active");
+  const restartDrill = () => window.location.reload();
 
   return (
-    <div className="w-full h-screen relative flex justify-center">
-      <div ref={containerRef} className="h-full" />
+    <div className="w-full h-screen relative overflow-hidden">
+      <div ref={containerRef} className="w-full h-full" />
 
-      {/* Info Panel */}
-      <div id="fire-info-panel" className="absolute inset-0 flex items-center justify-center z-20">
-        <div className="w-[90%] max-w-lg bg-black/90 backdrop-blur-lg border border-red-600 rounded-2xl shadow-2xl p-8 text-center">
-          <h1 className="text-3xl font-extrabold mb-4 text-red-400 drop-shadow-lg">🔥 Virtual Fire Drill</h1>
-          <p className="text-lg text-gray-200 mb-6">
-            Move quickly to find the <span className="text-green-400 font-bold">EXIT zone</span>.  
-            Stay low and avoid fire & smoke!
-          </p>
-          <button
-            id="fire-start-button"
-            className="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-200"
-          >
-            🚨 Start Fire Drill
-          </button>
+      {drillState === "ready" && (
+        <div className="absolute inset-0 flex items-center justify-center z-20">
+          <div className="w-[90%] max-w-lg bg-slate-900/90 border border-red-500 rounded-2xl p-8 text-center shadow-xl">
+            <h1 className="text-3xl font-bold mb-4 text-red-400">Virtual Fire Drill</h1>
+            <p className="text-lg text-gray-200 mb-6">
+              Use <span className="font-semibold text-red-300">W/A/S/D</span> keys to move and reach the safe zone.
+              <br />
+              Avoid the fire!
+            </p>
+            <button
+              onClick={startDrill}
+              className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg shadow-lg"
+            >
+              🚨 Start Fire Drill
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* Message Box */}
-      <div id="fire-message-box" className="hidden absolute inset-0 flex items-center justify-center z-30">
-        <div className="w-[90%] max-w-md bg-black/95 backdrop-blur-lg border border-red-500 rounded-2xl shadow-2xl p-6 text-center">
-          <h2 id="fire-message-title" className="text-2xl font-bold text-red-400 mb-2" />
-          <p id="fire-message-text" className="text-base text-gray-200 mb-4" />
-          <button
-            id="fire-continue-button"
-            className="hidden bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lg shadow-md transform hover:scale-105 transition-all duration-200"
-          >
-            Continue
-          </button>
+      {(drillState === "success" || drillState === "fail") && (
+        <div className="absolute inset-0 flex items-center justify-center z-30">
+          <div className="w-[90%] max-w-md bg-slate-900/95 border border-green-500 rounded-2xl p-6 text-center shadow-2xl">
+            <h2 className="text-2xl font-bold text-green-400 mb-2">{messageContent.title}</h2>
+            <p className="text-gray-200 mb-4">{messageContent.text}</p>
+            <button
+              className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg"
+              onClick={restartDrill}
+            >
+              {messageContent.button}
+            </button>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
