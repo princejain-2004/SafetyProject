@@ -25,7 +25,7 @@ export default function LoginForm() {
 
   const demoAccounts = [
     { email: 'student@school.edu', role: 'Student', password: 'demo123' },
-    { email: 'teacher@school.edu', role: 'Teacher', password: 'demo123' },
+    // { email: 'teacher@school.edu', role: 'Teacher', password: 'demo123' },
     { email: 'admin@school.edu', role: 'Administrator', password: 'demo123' }
   ];
 

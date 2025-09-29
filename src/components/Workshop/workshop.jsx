@@ -12,7 +12,7 @@ const WorkshopPage = () => {
   // State for requests (dummy data for now)
   const [requests, setRequests] = useState([
     { id: 1, name: "AI & Safety Training", requestedBy: "Prince Jain" },
-    { id: 2, name: "Fire Safety Awareness", requestedBy: "Alex Johnson" },
+    { id: 2, name: "Fire Safety Awareness", requestedBy: "Vanshika Jain" },
   ]);
 
   // Handle form submission
