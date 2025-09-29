@@ -296,7 +296,7 @@ export default function VirtualEarthquakeDrill() {
       {/* ✅ Single Message Box */}
       <div
         id="message-box"
-        className="hidden absolute inset-0 flex items-center justify-center z-30"
+        className="absolute inset-0 flex items-center justify-center z-30"
       >
         <div className="w-[90%] max-w-md bg-slate-900/95 backdrop-blur-lg border border-green-500 rounded-2xl shadow-2xl p-6 text-center animate-fadeIn">
           <h2 id="message-title" className="text-2xl font-bold text-green-400 mb-2" />
