@@ -149,7 +149,6 @@ const quizSets = [
 ];
 
 
-
 export default function FireQuiz() {
   const [started, setStarted] = useState(false);
   const [currentSetIndex, setCurrentSetIndex] = useState(0);
