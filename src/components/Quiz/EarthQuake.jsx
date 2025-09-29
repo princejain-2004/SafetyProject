@@ -166,7 +166,18 @@ export default function EarthquakeQuiz() {
         </div>
       ) : (
         // === Full Screen Quiz ===
-        <div className="w-full min-h-screen flex items-center justify-center bg-gray-900 p-4">
+        <div className="w-full min-h-screen flex flex-col md:flex-row items-center justify-center bg-gray-900 p-6 gap-8">
+        {/* Image Section */}
+        <div className="flex-1 flex justify-center">
+          <img
+            src="/quiz-illustration.png" // replace with your image path
+            alt="Quiz Illustration"
+            className="w-72 h-auto rounded-xl shadow-lg object-contain"
+          />
+        </div>
+      
+        {/* Quiz Section */}
+        <div className="flex-1 flex items-center justify-center">
           {!finished ? (
             <div className="flex flex-col gap-4 w-full max-w-2xl">
               <div className="bg-gray-800 rounded-xl p-6 shadow-xl">
@@ -191,9 +202,11 @@ export default function EarthquakeQuiz() {
                   ))}
                 </div>
               </div>
-
-              {feedback && <div className="text-center text-lg font-bold animate-bounce">{feedback}</div>}
-
+      
+              {feedback && (
+                <div className="text-center text-lg font-bold animate-bounce">{feedback}</div>
+              )}
+      
               {selectedOption !== null && (
                 <button
                   onClick={handleNext}
@@ -222,6 +235,8 @@ export default function EarthquakeQuiz() {
             </div>
           )}
         </div>
+      </div>
+      
       )}
     </div>
   );

@@ -1,6 +1,8 @@
 import React from 'react';
 import { BookOpen, Trophy, Zap, AlertTriangle, Target, TrendingUp } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { EarthquakeBadge } from '../badges/earth';
+import { FireBadge } from '../badges/fire';   // ✅ Fire Badge import
 
 export default function StudentDashboard() {
   const { user } = useAuth();
@@ -26,22 +28,31 @@ export default function StudentDashboard() {
   return (
     <div className="space-y-6">
       {/* Welcome Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-green-600 rounded-xl p-6 text-white">
-        <h1 className="text-2xl font-bold mb-2">Welcome back, {user?.name}!</h1>
-        <p className="text-blue-100 mb-4">Continue your emergency preparedness journey</p>
-        <div className="flex items-center space-x-6">
-          <div className="text-center">
-            <div className="text-2xl font-bold">{user?.points}</div>
-            <div className="text-sm text-blue-100">Total Points</div>
+      <div className="bg-gradient-to-r from-blue-600 to-green-600 rounded-xl p-6 text-white flex justify-between items-start">
+        {/* Left side: text + stats */}
+        <div>
+          <h1 className="text-2xl font-bold mb-2">Welcome back, {user?.name}!</h1>
+          <p className="text-blue-100 mb-4">Continue your emergency preparedness journey</p>
+          <div className="flex items-center space-x-6">
+            <div className="text-center">
+              <div className="text-2xl font-bold">{user?.points}</div>
+              <div className="text-sm text-blue-100">Total Points</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold">{user?.badges?.length}</div>
+              <div className="text-sm text-blue-100">Badges Earned</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold">7</div>
+              <div className="text-sm text-blue-100">Drills Completed</div>
+            </div>
           </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold">{user?.badges?.length}</div>
-            <div className="text-sm text-blue-100">Badges Earned</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold">7</div>
-            <div className="text-sm text-blue-100">Drills Completed</div>
-          </div>
+        </div>
+
+        {/* Right side: Badges */}
+        <div className="flex flex-col items-center space-y-3">
+          <EarthquakeBadge size={56} className="drop-shadow-lg" />
+          <FireBadge size={56} className="drop-shadow-lg" />
         </div>
       </div>
 
@@ -70,18 +81,6 @@ export default function StudentDashboard() {
             </div>
           </div>
         </div>
-
-        {/* <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow cursor-pointer">
-          <div className="flex items-center space-x-3">
-            <div className="bg-yellow-100 p-2 rounded-lg">
-              <Trophy className="w-5 h-5 text-yellow-600" />
-            </div>
-            <div>
-              <p className="font-medium text-gray-900">View Achievements</p>
-              <p className="text-sm text-gray-500">2 badges pending</p>
-            </div>
-          </div>
-        </div> */}
 
         <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow cursor-pointer">
           <div className="flex items-center space-x-3">
@@ -153,7 +152,6 @@ export default function StudentDashboard() {
             </div>
           </div>
         </div>
-        
       </div>
 
       {/* Upcoming Drills */}
@@ -165,7 +163,7 @@ export default function StudentDashboard() {
               <div key={drill.id} className="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-colors">
                 <h3 className="font-medium text-gray-900 mb-1">{drill.title}</h3>
                 <p className="text-sm text-gray-600 mb-2">{drill.type}</p>
-                {/* <p className="text-sm text-blue-600 font-medium">{drill.date}</p> */}
+                <p className="text-sm text-blue-600 font-medium">{drill.date}</p>
               </div>
             ))}
           </div>

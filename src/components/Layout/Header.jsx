@@ -195,7 +195,7 @@ export default function Header({ onMenuToggle, isMobileMenuOpen }) {
 
             <div className="space-y-2">
 
-              {['student', 'teacher', 'admin'].map((role) => (
+              {['student', 'admin'].map((role) => (
 
                 <button
 

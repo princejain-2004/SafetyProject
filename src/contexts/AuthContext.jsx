@@ -7,7 +7,7 @@ const mockUsers = [
   {
     id: '1',
     email: 'student@school.edu',
-    name: 'Alex Johnson',
+    name: 'Mohit Vijay',
     role: 'student',
     grade: '10th',
     school_id: 'school-1',
@@ -18,7 +18,7 @@ const mockUsers = [
   {
     id: '2',
     email: 'teacher@school.edu',
-    name: 'Sarah Mitchell',
+    name: 'Monika Sharma',
     role: 'teacher',
     school_id: 'school-1',
     points: 3500,
@@ -28,7 +28,7 @@ const mockUsers = [
   {
     id: '3',
     email: 'admin@school.edu',
-    name: 'Michael Chen',
+    name: 'Mukesh Kumar',
     role: 'admin',
     school_id: 'school-1',
     points: 5000,

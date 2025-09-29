@@ -13,6 +13,7 @@ import Quiz from './components/Quiz/Quiz';
 import { DisasterLandingPage } from './components/LandingPage/LandingPage';
 import FAQ from './components/FeedbackAndFaq/FAQ';
 import Feedback from './components/FeedbackAndFaq/Feedback';
+import TeacherGuide from './components/Guidelines/Guidelines.jsx';
 
 // ✅ Import chatbot widget
 import ChatBotWidget from './components/ChatBot/ChatbotWidget.jsx';
@@ -71,6 +72,8 @@ function AppContent() {
         return <Feedback />;
       case 'workshop':
         return <WorkshopPage />;
+      case 'guidelines':
+        return <TeacherGuide />;
       default:
         return <StudentDashboard />;
     }
