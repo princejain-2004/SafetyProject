@@ -18,6 +18,8 @@ import TeacherGuide from './components/Guidelines/Guidelines.jsx';
 // ✅ Import chatbot widget
 import ChatBotWidget from './components/ChatBot/ChatbotWidget.jsx';
 import WorkshopPage from './components/Workshop/workshop.jsx';
+import VirtualFloodDrill from './components/Drills/VirtualFloodDrill.jsx';
+import VirtualFireDrill from './components/Drills/VirtualFireDrill.jsx';
 
 function AppContent() {
   const { user, loading } = useAuth();
@@ -60,8 +62,42 @@ function AppContent() {
         return <EducationModules />;
       case 'alerts':
         return <EmergencyAlerts />;
-      case 'drills':
-        return <VirtualEarthquakeDrill />; 
+        case 'drills':
+  return (
+    <div>
+      <h2 className="text-2xl font-bold mb-4">Choose a Drill</h2>
+      <div className="flex gap-6">
+        <button
+          onClick={() => setActiveTab('earthquake-drill')}
+          className="px-6 py-3 bg-red-600 text-white rounded-lg shadow-md hover:bg-red-700"
+        >
+          🌍 Earthquake Drill
+        </button>
+        <button
+          onClick={() => setActiveTab('flood-drill')}
+          className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700"
+        >
+          🌊 Flood Drill
+        </button>
+        <button
+          onClick={() => setActiveTab('fire-drill')}
+          className="px-6 py-3 bg-orange-600 text-white rounded-lg shadow-md hover:bg-orange-700"
+        >
+          🔥 Fire Drill
+        </button>
+      </div>
+    </div>
+  );
+
+case 'earthquake-drill':
+  return <VirtualEarthquakeDrill />;
+
+case 'flood-drill':
+  return <VirtualFloodDrill />;
+
+case 'fire-drill':
+  return <VirtualFireDrill />;
+
       case 'contacts':
         return <EmergencyContacts />;
       case 'Quiz':

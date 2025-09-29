@@ -9,13 +9,12 @@ export default function VirtualFloodDrill() {
     let ground, water, house, hill, platform, debrisGroup, boat;
     let isDrillActive = false;
     let waterStart = 0;
-    let waterLevel = -1.5; // initial water Y
+    let waterLevel = -1.5;
     let rescued = false;
 
-    const FLOOD_DURATION = 20000; // 20s until critical
-    const WATER_RISE_SPEED = 0.0009; // tuning variable (units per ms)
+    const FLOOD_DURATION = 20000;
+    const WATER_RISE_SPEED = 0.0009;
 
-    // DOM refs
     const infoPanel = document.getElementById("info-panel");
     const startButton = document.getElementById("start-button");
     const messageBox = document.getElementById("message-box");
@@ -23,7 +22,6 @@ export default function VirtualFloodDrill() {
     const messageText = document.getElementById("message-text");
     const continueButton = document.getElementById("continue-button");
 
-    // Controls
     const mouseControls = { isDragging: false, prevX: 0, prevY: 0 };
     const keys = { w: false, a: false, s: false, d: false };
 
@@ -31,17 +29,14 @@ export default function VirtualFloodDrill() {
       scene = new THREE.Scene();
       scene.background = new THREE.Color(0x0b1632);
 
-      camera = new THREE.PerspectiveCamera(
-        75,
-        window.innerWidth / (window.innerHeight * 1.2), // reduce width aspect ratio
-        0.1,
-        1000
-      );
+      const width = containerRef.current.clientWidth;
+      const height = containerRef.current.clientHeight;
+
+      camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
       camera.position.set(0, 1.6, 6);
 
       renderer = new THREE.WebGLRenderer({ antialias: true });
-      // Set reduced width (70% of window width)
-      renderer.setSize(window.innerWidth * 0.7, window.innerHeight);
+      renderer.setSize(width, height);
       containerRef.current.appendChild(renderer.domElement);
 
       clock = new THREE.Clock();
@@ -62,7 +57,7 @@ export default function VirtualFloodDrill() {
       ground.position.y = -2;
       scene.add(ground);
 
-      // gentle hill (higher ground / safe)
+      // hill
       hill = new THREE.Mesh(
         new THREE.ConeGeometry(4, 3, 32),
         new THREE.MeshLambertMaterial({ color: 0x3f6b3f })
@@ -71,7 +66,7 @@ export default function VirtualFloodDrill() {
       hill.rotation.x = Math.PI;
       scene.add(hill);
 
-      // house to shelter under elevated platform
+      // house
       house = new THREE.Group();
       const base = new THREE.Mesh(
         new THREE.BoxGeometry(3, 1.4, 2.5),
@@ -90,15 +85,19 @@ export default function VirtualFloodDrill() {
 
       scene.add(house);
 
-      // raised platform (safe spot)
+      // platform
       platform = new THREE.Mesh(
         new THREE.BoxGeometry(2, 0.4, 1.6),
-        new THREE.MeshPhongMaterial({ color: 0x2dd4bf, transparent: true, opacity: 0.85 })
+        new THREE.MeshPhongMaterial({
+          color: 0x2dd4bf,
+          transparent: true,
+          opacity: 0.85,
+        })
       );
       platform.position.set(6, 0.2, -3);
       scene.add(platform);
 
-      // water plane
+      // water
       const waterGeo = new THREE.PlaneGeometry(200, 200, 32, 32);
       const waterMat = new THREE.MeshLambertMaterial({
         color: 0x1e90ff,
@@ -111,10 +110,9 @@ export default function VirtualFloodDrill() {
       water.position.y = waterLevel;
       scene.add(water);
 
-      // debris group
+      // debris
       debrisGroup = new THREE.Group();
       scene.add(debrisGroup);
-      createDebris();
 
       // boat
       boat = new THREE.Mesh(
@@ -133,45 +131,88 @@ export default function VirtualFloodDrill() {
       window.addEventListener("keydown", onKeyDown);
       window.addEventListener("keyup", onKeyUp);
 
-      startButton.addEventListener("click", onStart);
-      continueButton.addEventListener("click", () => {
-        messageBox.style.display = "none";
-      });
+      if (startButton)
+        startButton.addEventListener("click", onStart);
+      if (continueButton)
+        continueButton.addEventListener("click", () => {
+          messageBox.style.display = "none";
+        });
 
       window.addEventListener("resize", onResize);
 
       animate();
     }
 
-    // rest of the code unchanged ...
-
     function onResize() {
-      if (!camera || !renderer) return;
-      camera.aspect = (window.innerWidth * 0.7) / window.innerHeight;
+      if (!camera || !renderer || !containerRef.current) return;
+      const width = containerRef.current.clientWidth;
+      const height = containerRef.current.clientHeight;
+      camera.aspect = width / height;
       camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth * 0.7, window.innerHeight);
+      renderer.setSize(width, height);
+    }
+
+    function onMouseDown(e) {
+      mouseControls.isDragging = true;
+      mouseControls.prevX = e.clientX;
+      mouseControls.prevY = e.clientY;
+    }
+
+    function onMouseUp() {
+      mouseControls.isDragging = false;
+    }
+
+    function onMouseMove(e) {
+      if (!mouseControls.isDragging) return;
+      const deltaX = e.clientX - mouseControls.prevX;
+      camera.rotation.y -= deltaX * 0.002;
+      mouseControls.prevX = e.clientX;
+    }
+
+    function onKeyDown(e) {
+      if (e.key.toLowerCase() in keys) keys[e.key.toLowerCase()] = true;
+    }
+    function onKeyUp(e) {
+      if (e.key.toLowerCase() in keys) keys[e.key.toLowerCase()] = false;
+    }
+
+    function onStart() {
+      isDrillActive = true;
+      waterStart = Date.now();
+      if (infoPanel) infoPanel.style.display = "none";
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+      renderer.render(scene, camera);
     }
 
     init();
 
     return () => {
-      try {
-        window.removeEventListener("resize", onResize);
-        if (renderer && containerRef.current) containerRef.current.removeChild(renderer.domElement);
-      } catch (e) {}
+      window.removeEventListener("resize", onResize);
+      if (renderer && containerRef.current) {
+        containerRef.current.removeChild(renderer.domElement);
+      }
     };
   }, []);
 
   return (
-    <div className="w-full h-screen relative flex justify-center">
-      <div ref={containerRef} className="h-full" />
+    <div className="w-full h-[600px] relative flex justify-center border border-gray-300">
+      <div ref={containerRef} className="w-full h-full" />
 
       {/* Info Panel */}
-      <div id="info-panel" className="absolute inset-0 flex items-center justify-center z-20">
+      <div
+        id="info-panel"
+        className="absolute inset-0 flex items-center justify-center z-20"
+      >
         <div className="w-[90%] max-w-lg bg-slate-900/90 backdrop-blur-lg border border-cyan-500 rounded-2xl shadow-2xl p-8 text-center animate-fadeIn">
-          <h1 className="text-3xl font-extrabold mb-4 text-cyan-300 drop-shadow-lg">Virtual Flood Drill</h1>
+          <h1 className="text-3xl font-extrabold mb-4 text-cyan-300 drop-shadow-lg">
+            Virtual Flood Drill
+          </h1>
           <p className="text-lg text-gray-200 mb-6">
-            Click and drag to look around. Use <span className="font-semibold text-cyan-200">W/A/S/D</span> to move.
+            Click and drag to look around. Use{" "}
+            <span className="font-semibold text-cyan-200">W/A/S/D</span> to move.
             <br /> Find high ground or climb onto an elevated platform.
           </p>
           <button
@@ -184,9 +225,15 @@ export default function VirtualFloodDrill() {
       </div>
 
       {/* Message Box */}
-      <div id="message-box" className="hidden absolute inset-0 flex items-center justify-center z-30">
+      <div
+        id="message-box"
+        className="hidden absolute inset-0 flex items-center justify-center z-30"
+      >
         <div className="w-[90%] max-w-md bg-slate-900/95 backdrop-blur-lg border border-cyan-500 rounded-2xl shadow-2xl p-6 text-center animate-fadeIn">
-          <h2 id="message-title" className="text-2xl font-bold text-cyan-300 mb-2" />
+          <h2
+            id="message-title"
+            className="text-2xl font-bold text-cyan-300 mb-2"
+          />
           <p id="message-text" className="text-base text-gray-200 mb-4" />
           <button
             id="continue-button"
