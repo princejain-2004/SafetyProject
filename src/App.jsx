@@ -9,8 +9,9 @@ import EducationModules from './components/Education/EducationModules';
 import EmergencyAlerts from './components/Alerts/EmergencyAlerts';
 import VirtualEarthquakeDrill from './components/Drills/VirtualDrills.jsx';
 import VirtualFireDrill from './components/Drills/VirtualFireDrill.jsx';
+import VirtualFloodDrill from './components/Drills/VirtualFloodDrill.jsx';
 import EmergencyContacts from './components/Contacts/EmergencyContacts';
-import Quiz from './components/Quiz/Quiz';
+import Quiz from './components/Quiz/Quiz';  
 import { DisasterLandingPage } from './components/LandingPage/LandingPage';
 import FAQ from './components/FeedbackAndFaq/FAQ';
 import Feedback from './components/FeedbackAndFaq/Feedback';
@@ -28,8 +29,16 @@ function AppContent() {
 
   useEffect(() => setIsMobileMenuOpen(false), [activeTab]);
 
-  if (loading) return <div className="flex items-center justify-center h-screen bg-gray-100">Loading...</div>;
-  if (showLanding) return <DisasterLandingPage onGetStartedClick={() => setShowLanding(false)} />;
+  if (loading)
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-100">
+        Loading...
+      </div>
+    );
+
+  if (showLanding)
+    return <DisasterLandingPage onGetStartedClick={() => setShowLanding(false)} />;
+
   if (!user) return <LoginForm />;
 
   const renderContent = () => {
@@ -43,10 +52,34 @@ function AppContent() {
       case 'drills':
         return (
           <div>
-            <h2 className="text-2xl font-bold mb-4">Choose a Drill</h2>
-            <div className="flex gap-6">
-              <button onClick={() => setActiveTab('earthquake-drill')} className="px-6 py-3 bg-red-600 text-white rounded-lg shadow-md hover:bg-red-700">🌍 Earthquake Drill</button>
-              <button onClick={() => setActiveTab('fire-drill')} className="px-6 py-3 bg-orange-600 text-white rounded-lg shadow-md hover:bg-orange-700">🔥 Fire Drill</button>
+            <h2 className="text-2xl font-bold mb-6">Choose a Drill</h2>
+            <div className="flex gap-6 flex-wrap">
+              {/* Earthquake Drill Card */}
+              <div
+                onClick={() => setActiveTab('earthquake-drill')}
+                className="flex-1 min-w-[200px] bg-red-600 text-white rounded-xl shadow-lg p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-red-700 transition"
+              >
+                <span className="text-4xl mb-2">🌍</span>
+                <span className="text-lg font-semibold">Earthquake Drill</span>
+              </div>
+
+              {/* Fire Drill Card */}
+              <div
+                onClick={() => setActiveTab('fire-drill')}
+                className="flex-1 min-w-[200px] bg-orange-600 text-white rounded-xl shadow-lg p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-orange-700 transition"
+              >
+                <span className="text-4xl mb-2">🔥</span>
+                <span className="text-lg font-semibold">Fire Drill</span>
+              </div>
+
+              {/* Flood Drill Card */}
+              <div
+                onClick={() => setActiveTab('flood-drill')}
+                className="flex-1 min-w-[200px] bg-blue-600 text-white rounded-xl shadow-lg p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-blue-700 transition"
+              >
+                <span className="text-4xl mb-2">🌊</span>
+                <span className="text-lg font-semibold">Virtual Flood Drill</span>
+              </div>
             </div>
           </div>
         );
@@ -54,9 +87,11 @@ function AppContent() {
         return <VirtualEarthquakeDrill />;
       case 'fire-drill':
         return <VirtualFireDrill />;
+      case 'flood-drill':
+        return <VirtualFloodDrill />;
       case 'contacts':
         return <EmergencyContacts />;
-      case 'quiz':
+      case 'Quiz':
         return <Quiz />;
       case 'faq':
         return <FAQ />;
@@ -77,22 +112,36 @@ function AppContent() {
 
   return (
     <div className="flex h-screen bg-gray-100 relative">
+      {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden"
-             onClick={() => setIsMobileMenuOpen(false)} />
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
       )}
 
-      <Sidebar activeTab={activeTab} onTabChange={setActiveTab} isOpen={isMobileMenuOpen} />
+      {/* Sidebar */}
+      <Sidebar
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        isOpen={isMobileMenuOpen}
+      />
 
+      {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        <Header onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)} isMobileMenuOpen={isMobileMenuOpen} setActiveTab={setActiveTab} />
-        <main className="flex-1 overflow-y-auto">
+        <Header
+          onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          isMobileMenuOpen={isMobileMenuOpen}
+          setActiveTab={setActiveTab}   // ✅ passed down
+        />
+        <main className="flex-1 relative overflow-auto">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             {renderContent()}
           </div>
         </main>
       </div>
 
+      {/* ChatBot Widget */}
       <ChatBotWidget />
     </div>
   );

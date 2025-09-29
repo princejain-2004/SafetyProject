@@ -1,9 +1,9 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react'; // optional icon
+import { ArrowLeft } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
 
-export default function AdminProfile() {
-  const navigate = useNavigate();
+export default function AdminProfile({ setActiveTab }) {
+  const { user } = useAuth();
 
   const profileData = {
     "Full Name": "Mukesh Kumar",
@@ -15,11 +15,15 @@ export default function AdminProfile() {
     "Address": "123 Main St, City, State",
   };
 
+  const handleBack = () => {
+    setActiveTab("dashboard"); // ✅ returns to dashboard tab
+  };
+
   return (
     <div className="max-w-3xl mx-auto mt-10 p-6 bg-white shadow-md rounded-lg">
       {/* Back Button */}
       <button
-        onClick={() => navigate('/')}
+        onClick={handleBack}
         className="flex items-center space-x-2 text-blue-600 hover:text-blue-800 mb-6"
       >
         <ArrowLeft size={16} />

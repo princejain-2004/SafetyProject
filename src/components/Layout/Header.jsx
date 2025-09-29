@@ -6,9 +6,16 @@ export default function Header({ onMenuToggle, isMobileMenuOpen, setActiveTab })
   const { user, logout } = useAuth();
   const [showUserMenu, setShowUserMenu] = useState(false);
 
+  const alertCount = 2; // Mock alert count
+
   const handleProfileClick = () => {
-    // Use activeTab to navigate inside renderContent
-    setActiveTab(user?.role === 'admin' ? 'admin-profile' : 'profile');
+    if (user?.role === "student") {
+      setActiveTab("profile");
+    } else if (user?.role === "admin") {
+      setActiveTab("admin-profile");
+    } else {
+      console.log("Unknown role, cannot navigate");
+    }
     setShowUserMenu(false);
   };
 
@@ -16,7 +23,7 @@ export default function Header({ onMenuToggle, isMobileMenuOpen, setActiveTab })
     <header className="bg-white shadow-sm border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo and menu */}
+          {/* Logo and Title */}
           <div className="flex items-center space-x-4">
             <button
               onClick={onMenuToggle}
@@ -24,12 +31,16 @@ export default function Header({ onMenuToggle, isMobileMenuOpen, setActiveTab })
             >
               {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
+
             <div className="flex items-center space-x-3">
-              <img
-                src="src/Assets/Logo.png"
-                alt="SafetyFirst Logo"
-                className="w-20 h-15"
-              />
+              <div className="flex items-center space-x-3">
+                <img
+                  src="src/Assets/Logo.png"
+                  alt="SafetyFirst Logo"
+                  className="w-20 h-15"
+                />
+              </div>
+
               <div>
                 <h1 className="text-xl font-bold text-gray-900">SafetyFirst</h1>
                 <p className="text-xs text-gray-500 hidden sm:block">
@@ -39,14 +50,16 @@ export default function Header({ onMenuToggle, isMobileMenuOpen, setActiveTab })
             </div>
           </div>
 
-          {/* User Menu */}
+          {/* Right side - Alerts and User Menu */}
           <div className="flex items-center space-x-4">
+            {/* Alerts */}
             <div className="relative">
               <button className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors">
-                {/* Alerts icon placeholder */}
+                {/* <Bell size={20} /> */}
               </button>
             </div>
 
+            {/* User Menu */}
             <div className="relative">
               <button
                 onClick={() => setShowUserMenu(!showUserMenu)}
@@ -68,6 +81,7 @@ export default function Header({ onMenuToggle, isMobileMenuOpen, setActiveTab })
                     <p className="text-xs text-gray-500">{user?.email}</p>
                   </div>
 
+                  {/* Edit Profile button */}
                   <button
                     onClick={handleProfileClick}
                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
