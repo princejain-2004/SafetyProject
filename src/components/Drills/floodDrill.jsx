@@ -1,31 +1,30 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 
 export default function VirtualFloodDrill() {
   const containerRef = useRef(null);
+  const [started, setStarted] = useState(false);
+  const [message, setMessage] = useState(null);
 
   useEffect(() => {
     let scene, camera, renderer, clock;
     let ground, water, house, hill, platform, debrisGroup, boat;
+    let waterLevel = -1.5;
     let isDrillActive = false;
     let waterStart = 0;
-    let waterLevel = -1.5; // initial water Y
-    let rescued = false;
 
-    const FLOOD_DURATION = 20000; // 20s until critical
-    const WATER_RISE_SPEED = 0.0009; // tuning variable (units per ms)
+    const WATER_RISE_SPEED = 0.0009;
 
-    // DOM refs
-    const infoPanel = document.getElementById("info-panel");
-    const startButton = document.getElementById("start-button");
-    const messageBox = document.getElementById("message-box");
-    const messageTitle = document.getElementById("message-title");
-    const messageText = document.getElementById("message-text");
-    const continueButton = document.getElementById("continue-button");
-
-    // Controls
-    const mouseControls = { isDragging: false, prevX: 0, prevY: 0 };
-    const keys = { w: false, a: false, s: false, d: false };
+    function createDebris(group) {
+      for (let i = 0; i < 12; i++) {
+        const box = new THREE.Mesh(
+          new THREE.BoxGeometry(0.5, 0.3, 0.2),
+          new THREE.MeshLambertMaterial({ color: 0xdeb887 })
+        );
+        box.position.set((Math.random() - 0.5) * 10, waterLevel + 0.2, (Math.random() - 0.5) * 10);
+        group.add(box);
+      }
+    }
 
     function init() {
       scene = new THREE.Scene();
@@ -33,45 +32,42 @@ export default function VirtualFloodDrill() {
 
       camera = new THREE.PerspectiveCamera(
         75,
-        window.innerWidth / (window.innerHeight * 1.2), // reduce width aspect ratio
+        (window.innerWidth * 0.7) / window.innerHeight,
         0.1,
         1000
       );
       camera.position.set(0, 1.6, 6);
 
       renderer = new THREE.WebGLRenderer({ antialias: true });
-      // Set reduced width (70% of window width)
       renderer.setSize(window.innerWidth * 0.7, window.innerHeight);
       containerRef.current.appendChild(renderer.domElement);
 
       clock = new THREE.Clock();
 
-      // lights
+      // Lights
       scene.add(new THREE.AmbientLight(0x555555));
       const dir = new THREE.DirectionalLight(0xffffff, 0.8);
       dir.position.set(5, 10, 5);
       scene.add(dir);
 
-      // ground
-      const groundGeo = new THREE.PlaneGeometry(60, 60);
+      // Ground
       ground = new THREE.Mesh(
-        groundGeo,
+        new THREE.PlaneGeometry(60, 60),
         new THREE.MeshLambertMaterial({ color: 0x2e3b4e })
       );
       ground.rotation.x = -Math.PI / 2;
       ground.position.y = -2;
       scene.add(ground);
 
-      // gentle hill (higher ground / safe)
+      // Hill
       hill = new THREE.Mesh(
         new THREE.ConeGeometry(4, 3, 32),
         new THREE.MeshLambertMaterial({ color: 0x3f6b3f })
       );
       hill.position.set(-8, -0.5, -6);
-      hill.rotation.x = Math.PI;
       scene.add(hill);
 
-      // house to shelter under elevated platform
+      // House
       house = new THREE.Group();
       const base = new THREE.Mesh(
         new THREE.BoxGeometry(3, 1.4, 2.5),
@@ -87,10 +83,9 @@ export default function VirtualFloodDrill() {
       roof.position.set(0, 0.6, -4.5);
       roof.rotation.y = Math.PI / 4;
       house.add(roof);
-
       scene.add(house);
 
-      // raised platform (safe spot)
+      // Safe Platform
       platform = new THREE.Mesh(
         new THREE.BoxGeometry(2, 0.4, 1.6),
         new THREE.MeshPhongMaterial({ color: 0x2dd4bf, transparent: true, opacity: 0.85 })
@@ -98,25 +93,26 @@ export default function VirtualFloodDrill() {
       platform.position.set(6, 0.2, -3);
       scene.add(platform);
 
-      // water plane
-      const waterGeo = new THREE.PlaneGeometry(200, 200, 32, 32);
-      const waterMat = new THREE.MeshLambertMaterial({
-        color: 0x1e90ff,
-        transparent: true,
-        opacity: 0.7,
-        side: THREE.DoubleSide,
-      });
-      water = new THREE.Mesh(waterGeo, waterMat);
+      // Water
+      water = new THREE.Mesh(
+        new THREE.PlaneGeometry(200, 200, 32, 32),
+        new THREE.MeshLambertMaterial({
+          color: 0x1e90ff,
+          transparent: true,
+          opacity: 0.7,
+          side: THREE.DoubleSide,
+        })
+      );
       water.rotation.x = -Math.PI / 2;
       water.position.y = waterLevel;
       scene.add(water);
 
-      // debris group
+      // Debris
       debrisGroup = new THREE.Group();
       scene.add(debrisGroup);
-      createDebris();
+      createDebris(debrisGroup);
 
-      // boat
+      // Boat
       boat = new THREE.Mesh(
         new THREE.BoxGeometry(1.2, 0.2, 0.6),
         new THREE.MeshLambertMaterial({ color: 0x5b2c6f })
@@ -125,28 +121,25 @@ export default function VirtualFloodDrill() {
       boat.visible = false;
       scene.add(boat);
 
-      // listeners
-      renderer.domElement.addEventListener("mousedown", onMouseDown);
-      renderer.domElement.addEventListener("mouseup", onMouseUp);
-      renderer.domElement.addEventListener("mousemove", onMouseMove);
-
-      window.addEventListener("keydown", onKeyDown);
-      window.addEventListener("keyup", onKeyUp);
-
-      startButton.addEventListener("click", onStart);
-      continueButton.addEventListener("click", () => {
-        messageBox.style.display = "none";
-      });
-
       window.addEventListener("resize", onResize);
 
       animate();
     }
 
-    // rest of the code unchanged ...
+    function animate() {
+      requestAnimationFrame(animate);
+
+      if (isDrillActive) {
+        const elapsed = Date.now() - waterStart;
+        waterLevel = -1.5 + elapsed * WATER_RISE_SPEED;
+        water.position.y = waterLevel;
+        boat.position.y = waterLevel + 0.1;
+      }
+
+      renderer.render(scene, camera);
+    }
 
     function onResize() {
-      if (!camera || !renderer) return;
       camera.aspect = (window.innerWidth * 0.7) / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth * 0.7, window.innerHeight);
@@ -155,47 +148,56 @@ export default function VirtualFloodDrill() {
     init();
 
     return () => {
-      try {
-        window.removeEventListener("resize", onResize);
-        if (renderer && containerRef.current) containerRef.current.removeChild(renderer.domElement);
-      } catch (e) {}
+      window.removeEventListener("resize", onResize);
+      if (renderer && containerRef.current) {
+        containerRef.current.removeChild(renderer.domElement);
+      }
     };
   }, []);
+
+  const startDrill = () => {
+    setStarted(true);
+    setMessage("🚨 Flood waters are rising! Find high ground or the safe platform.");
+  };
+
+  const continueDrill = () => setMessage(null);
 
   return (
     <div className="w-full h-screen relative flex justify-center">
       <div ref={containerRef} className="h-full" />
 
-      {/* Info Panel */}
-      <div id="info-panel" className="absolute inset-0 flex items-center justify-center z-20">
-        <div className="w-[90%] max-w-lg bg-slate-900/90 backdrop-blur-lg border border-cyan-500 rounded-2xl shadow-2xl p-8 text-center animate-fadeIn">
-          <h1 className="text-3xl font-extrabold mb-4 text-cyan-300 drop-shadow-lg">Virtual Flood Drill</h1>
-          <p className="text-lg text-gray-200 mb-6">
-            Click and drag to look around. Use <span className="font-semibold text-cyan-200">W/A/S/D</span> to move.
-            <br /> Find high ground or climb onto an elevated platform.
-          </p>
-          <button
-            id="start-button"
-            className="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-200"
-          >
-            🚨 Start Flood Drill
-          </button>
+      {!started && (
+        <div className="absolute inset-0 flex items-center justify-center z-20">
+          <div className="w-[90%] max-w-lg bg-slate-900/90 border border-cyan-500 rounded-2xl p-8 text-center shadow-xl">
+            <h1 className="text-3xl font-bold mb-4 text-cyan-300">Virtual Flood Drill</h1>
+            <p className="text-lg text-gray-200 mb-6">
+              Click and drag to look around. Use <b>W/A/S/D</b> to move.
+              <br /> Find high ground or climb onto the platform.
+            </p>
+            <button
+              onClick={startDrill}
+              className="bg-cyan-600 hover:bg-cyan-700 text-white px-6 py-3 rounded-lg shadow-lg"
+            >
+              🚨 Start Flood Drill
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* Message Box */}
-      <div id="message-box" className="hidden absolute inset-0 flex items-center justify-center z-30">
-        <div className="w-[90%] max-w-md bg-slate-900/95 backdrop-blur-lg border border-cyan-500 rounded-2xl shadow-2xl p-6 text-center animate-fadeIn">
-          <h2 id="message-title" className="text-2xl font-bold text-cyan-300 mb-2" />
-          <p id="message-text" className="text-base text-gray-200 mb-4" />
-          <button
-            id="continue-button"
-            className="hidden bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 px-6 rounded-lg shadow-md transform hover:scale-105 transition-all duration-200"
-          >
-            Continue
-          </button>
+      {message && (
+        <div className="absolute inset-0 flex items-center justify-center z-30">
+          <div className="w-[90%] max-w-md bg-slate-900/95 border border-cyan-500 rounded-2xl p-6 text-center shadow-xl">
+            <h2 className="text-2xl font-bold text-cyan-300 mb-2">Flood Alert</h2>
+            <p className="text-gray-200 mb-4">{message}</p>
+            <button
+              onClick={continueDrill}
+              className="bg-cyan-600 hover:bg-cyan-700 text-white px-4 py-2 rounded-lg shadow-md"
+            >
+              Continue
+            </button>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
